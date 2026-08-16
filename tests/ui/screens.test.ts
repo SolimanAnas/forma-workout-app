@@ -29,10 +29,11 @@ describe('screen render smoke tests (jsdom)', () => {
     expect(o.querySelector('a.btn--primary')?.getAttribute('href')).toBe('#/workout');
   });
 
-  it('Workout lists all five modes', () => {
+  it('Workout renders the setup form (exercise + mode + start)', () => {
     const o = outlet();
     renderWorkout(o);
-    expect(o.querySelectorAll('.exercise-list .card')).toHaveLength(5);
+    expect(o.querySelectorAll('select')).toHaveLength(2);
+    expect(o.querySelector('button.btn--primary')?.textContent).toContain('Start');
   });
 
   it('Exercises lists every MVP exercise from data', () => {

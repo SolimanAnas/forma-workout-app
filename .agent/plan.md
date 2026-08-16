@@ -118,37 +118,37 @@ Android + iOS, diagnostics screen, and deterministic record/replay. Post milesto
 *The core IP: reliable, deterministic rep detection driven by replayable fixtures.*
 
 ### Stage 3.1 — Signal processing toolkit 🧪
-- [ ] `domain/signal/`: smoothing, moving average, low-/high-pass, magnitude, baseline normalization,
+- [x] `domain/signal/`: smoothing, moving average, low-/high-pass, magnitude, baseline normalization,
       hysteresis, debounce (spec §21). Pure functions, no browser deps.
-- [ ] 🧪 Unit tests per filter (known input → known output; noise rejection).
+- [x] 🧪 Unit tests per filter (known input → known output; noise rejection).
 - **Done-when:** each filter has tests; `domain/` compiles with zero browser imports.
 
 ### Stage 3.2 — Rep state machine 🧪
-- [ ] `domain/rep/` generic engine: `IDLE → START_POSITION → MOVING_DOWN → BOTTOM → MOVING_UP →
+- [x] `domain/rep/` generic engine: `IDLE → START_POSITION → MOVING_DOWN → BOTTOM → MOVING_UP →
       COMPLETED_REP` with per-profile config: `threshold · minMovement · minDuration · maxDuration ·
       hysteresis · cooldown · stateTimeout` (spec §10).
-- [ ] Guards against: double counting, random movement, tiny movements, incomplete cycles.
-- [ ] 🧪 Tests via fixtures: valid, partial, too-small, double, interrupted, slow, fast, noisy (spec §24).
+- [x] Guards against: double counting, random movement, tiny movements, incomplete cycles.
+- [x] 🧪 Tests via fixtures: valid, partial, too-small, double, interrupted, slow, fast, noisy (spec §24).
 - **Done-when:** all listed rep scenarios classified correctly on fixtures.
 
 ### Stage 3.3 — Calibration system
-- [ ] 3-2-1 capture of baseline orientation/acceleration, movement range, thresholds (spec §9).
-- [ ] Persist calibration per exercise/device; reuse without being cumbersome (no overfitting).
+- [x] 3-2-1 capture of baseline orientation/acceleration, movement range, thresholds (spec §9).
+- [x] Persist calibration per exercise/device; reuse without being cumbersome (no overfitting).
 - **Done-when:** calibrating then running uses stored baselines; skippable with sane defaults.
 
 ### Stage 3.4 — Five detection profiles 🧪 ⚠️
-- [ ] **Push-up** — depth%, extension%, tempo, partials; proximity only if truly exposed, else fallback +
+- [x] **Push-up** — depth%, extension%, tempo, partials; proximity only if truly exposed, else fallback +
       shown detection mode. ⚠️
-- [ ] **Squat** — range, tempo, partials, invalid-move rejection.
-- [ ] **Sit-up/Crunch** — range, tempo, quality.
-- [ ] **Jumping Jack** — cyclic cadence/tempo/duration.
-- [ ] **Plank** — duration + stability + excessive-movement warnings (no fake form claims). ⚠️
-- [ ] Rep quality only where sensors support it; aggregate labeled *estimated* (spec §10/§8).
-- [ ] 🧪 Each profile validated against its recorded fixtures; accuracy target ≥95% (spec §25).
+- [x] **Squat** — range, tempo, partials, invalid-move rejection.
+- [x] **Sit-up/Crunch** — range, tempo, quality.
+- [x] **Jumping Jack** — cyclic cadence/tempo/duration.
+- [x] **Plank** — duration + stability + excessive-movement warnings (no fake form claims). ⚠️
+- [x] Rep quality only where sensors support it; aggregate labeled *estimated* (spec §10/§8).
+- [x] 🧪 Each profile validated against its recorded fixtures; accuracy target ≥95% (spec §25).
 - **Done-when:** each of the 5 detects reps/duration from live use **and** replay within accuracy target.
 
 ### Stage 3.5 — Placement assistant
-- [ ] Per-exercise placement config + pre-start orientation/sensor-active confirmation (spec §9).
+- [x] Per-exercise placement config + pre-start orientation/sensor-active confirmation (spec §9).
 - **Done-when:** each exercise shows correct placement guidance before starting.
 
 📄 Update `docs/EXERCISE_ENGINE.md` (algorithms, thresholds, how detection works).
@@ -162,20 +162,20 @@ tests. Post milestone report.
 *Compose exercises into full sessions — engine independent of the exercise engine (spec §13).*
 
 ### Stage 4.1 — Free Reps mode 🧪
-- [ ] Live count, last-rep validity, tempo; pause/resume/finish; result summary (valid/partial split).
-- [ ] 🧪 Tests: counting, pause/resume integrity, finish summary.
+- [x] Live count, last-rep validity, tempo; pause/resume/finish; result summary (valid/partial split).
+- [x] 🧪 Tests: counting, pause/resume integrity, finish summary.
 - **Done-when:** a free-reps session runs end-to-end and saves offline.
 
 ### Stage 4.2 — Sets + Rest timer 🧪
-- [ ] Sets (`N × M`) with auto-detected set completion (spec §13).
-- [ ] Rest timer: countdown, next-up preview, **Skip / +30s / Pause / Resume**, audio+vibration where
+- [x] Sets (`N × M`) with auto-detected set completion (spec §13).
+- [x] Rest timer: countdown, next-up preview, **Skip / +30s / Pause / Resume**, audio+vibration where
       supported.
-- [ ] 🧪 Tests: set advance, rest controls, skip.
+- [x] 🧪 Tests: set advance, rest controls, skip.
 - **Done-when:** `3 × 10` completes without manual rep increment (spec §31 acceptance).
 
 ### Stage 4.3 — AMRAP / EMOM / Circuit 🧪
-- [ ] AMRAP (time-boxed rounds), EMOM (per-minute), Circuit (mixed rep + duration movements).
-- [ ] 🧪 Tests for each mode incl. pause/resume/skip.
+- [x] AMRAP (time-boxed rounds), EMOM (per-minute), Circuit (mixed rep + duration movements).
+- [x] 🧪 Tests for each mode incl. pause/resume/skip.
 - **Done-when:** each mode runs a full session and persists results.
 
 🎯 **Phase 4 exit gate:** all workout modes functional and persisted; the `3×10` acceptance path passes.

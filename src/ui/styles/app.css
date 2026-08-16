@@ -223,6 +223,50 @@ select,
   margin-top: var(--space-4);
 }
 
+/* Active workout — the rep count dominates the screen (spec §34) */
+.workout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+  padding-top: var(--space-5);
+}
+.workout__exercise {
+  font-size: 1.1rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.rep-count {
+  font-size: clamp(5rem, 30vw, 10rem);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+.workout[data-phase='RESTING'] .rep-count {
+  color: var(--color-accent);
+}
+.rep-count__label {
+  font-size: 1rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.workout__detail {
+  font-size: 1rem;
+  color: var(--color-muted);
+  min-height: 1.5em;
+}
+.workout__controls {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--space-4);
+}
+
 /* Update / offline banner */
 .pwa-banner {
   position: fixed;

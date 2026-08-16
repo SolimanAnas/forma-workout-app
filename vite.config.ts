@@ -1,9 +1,9 @@
 import { defineConfig } from 'vitest/config';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// `base` must match the GitHub Pages subpath (https://<user>.github.io/Forma-App/).
+// `base` must match the GitHub Pages subpath (https://<user>.github.io/forma-workout-app/).
 export default defineConfig({
-  base: '/Forma-App/',
+  base: '/forma-workout-app/',
   plugins: [
     VitePWA({
       registerType: 'prompt',

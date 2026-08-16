@@ -9,6 +9,7 @@ import {
   listRecordings,
   saveRecording,
 } from '../../src/data/recordings';
+import { getCalibration, saveCalibration } from '../../src/data/calibrations';
 import type { SensorRecording } from '../../src/sensors/replay/recording';
 
 beforeEach(async () => {
@@ -114,5 +115,14 @@ describe('recordings repository', () => {
 
     await deleteRecording('rec-1');
     expect(await getRecording('rec-1')).toBeUndefined();
+  });
+});
+
+describe('calibration persistence', () => {
+  it('saves and reloads a per-exercise baseline', async () => {
+    await saveCalibration('pushup', { baseline: 9.81, restStd: 0.05, sampleCount: 60 });
+    const loaded = await getCalibration('pushup');
+    expect(loaded?.baseline).toBeCloseTo(9.81, 2);
+    expect(await getCalibration('squat')).toBeUndefined();
   });
 });
