@@ -22,9 +22,9 @@ beforeEach(async () => {
 });
 
 describe('screen render smoke tests (jsdom)', () => {
-  it('Home renders a title and a start action', () => {
+  it('Home renders a title and a start action', async () => {
     const o = outlet();
-    renderHome(o);
+    await renderHome(o);
     expect(o.querySelector('.screen__title')?.textContent).toBe('Today');
     expect(o.querySelector('a.btn--primary')?.getAttribute('href')).toBe('#/workout');
   });
@@ -43,9 +43,9 @@ describe('screen render smoke tests (jsdom)', () => {
     expect(o.textContent).toContain('Push-up');
   });
 
-  it('Progress renders without throwing', () => {
+  it('Progress renders without throwing', async () => {
     const o = outlet();
-    renderProgress(o);
+    await renderProgress(o);
     expect(o.querySelector('.screen__title')?.textContent).toBe('Progress');
   });
 

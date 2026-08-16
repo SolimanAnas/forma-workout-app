@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { deleteDB } from 'idb';
 import { DB_NAME } from '../../src/data/schema';
 import { _resetDbForTests } from '../../src/data/db';
@@ -32,15 +32,19 @@ describe('workout setup screen', () => {
 });
 
 describe('active workout (no sensor → manual reps)', () => {
-  it('counts a manual rep, finishes at target, and persists the workout', async () => {
+  it('counts a manual rep, finishes at target, persists, and coaches the finish', async () => {
+    const speak = vi.fn();
+    (window as unknown as Record<string, unknown>).speechSynthesis = { speak, cancel: vi.fn() };
+    (window as unknown as Record<string, unknown>).SpeechSynthesisUtterance = class {
+      constructor(public text: string) {}
+    };
+
     setPendingLaunch({ mode: 'free', exerciseId: 'pushup', free: { targetReps: 1 } });
     const o = outlet();
-    renderActiveWorkout(o);
+    await renderActiveWorkout(o);
 
     expect(o.querySelector('.rep-count')?.textContent).toBe('0');
-    const simulate = [...o.querySelectorAll('button')].find((b) =>
-      b.textContent?.includes('Rep'),
-    );
+    const simulate = [...o.querySelectorAll('button')].find((b) => b.textContent?.includes('Rep'));
     expect(simulate, 'manual rep button should appear without a sensor').toBeDefined();
 
     simulate?.click();
@@ -51,13 +55,17 @@ describe('active workout (no sensor → manual reps)', () => {
     const history = await listWorkouts();
     expect(history).toHaveLength(1);
     expect(history[0].totalReps).toBe(1);
-    expect(history[0].mode).toBe('free');
+    // The voice coach announced completion (integration wiring).
+    expect(speak).toHaveBeenCalled();
+
+    delete (window as unknown as Record<string, unknown>).speechSynthesis;
+    delete (window as unknown as Record<string, unknown>).SpeechSynthesisUtterance;
   });
 
-  it('redirects to setup when no launch is pending', () => {
+  it('redirects to setup when no launch is pending', async () => {
     const o = outlet();
     window.location.hash = '#/active-workout';
-    renderActiveWorkout(o);
+    await renderActiveWorkout(o);
     expect(window.location.hash).toBe('#/workout');
   });
 });

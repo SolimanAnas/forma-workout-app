@@ -214,6 +214,41 @@ select,
   white-space: pre;
 }
 
+/* Progress bars + dashboard */
+.bar {
+  height: 10px;
+  background: var(--color-surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: var(--space-2) 0;
+}
+.bar__fill {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.muscle-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 40px;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+}
+.muscle-row__name {
+  text-transform: capitalize;
+  font-size: 0.85rem;
+}
+.muscle-row__val {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+.card.highlight {
+  border-color: var(--color-accent);
+}
+
 .disclaimer {
   color: var(--color-muted);
   font-size: 0.82rem;

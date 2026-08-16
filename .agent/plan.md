@@ -186,23 +186,23 @@ Post milestone report.
 ## Phase 5 — Progression, Records & Dashboard (Milestone 5)
 
 ### Stage 5.1 — Quick assessment & levels 🧪
-- [ ] One max-quality set → estimate starting level → propose starting workout (spec §14).
-- [ ] Per-exercise, **configurable** progression engine (rules not hard-coded in UI).
-- [ ] 🧪 Tests: level calculation, progression steps, level-up.
+- [x] One max-quality set → estimate starting level → propose starting workout (spec §14).
+- [x] Per-exercise, **configurable** progression engine (rules not hard-coded in UI).
+- [x] 🧪 Tests: level calculation, progression steps, level-up.
 - **Done-when:** assessment yields a level + starting workout; successful workouts advance progression.
 
 ### Stage 5.2 — Personal records & XP 🧪
-- [ ] PRs: max reps, best set, most reps in time, fastest completion, best quality, longest duration,
+- [x] PRs: max reps, best set, most reps in time, fastest completion, best quality, longest duration,
       highest volume (spec §14).
-- [ ] XP, levels, achievements, streaks — **optional & non-intrusive** (spec §14).
-- [ ] 🧪 Tests: PR detection, XP accrual, achievement/streak triggers.
+- [x] XP, levels, achievements, streaks — **optional & non-intrusive** (spec §14).
+- [x] 🧪 Tests: PR detection, XP accrual, achievement/streak triggers.
 - **Done-when:** completing a qualifying workout records PRs, XP, and eligible achievements.
 
 ### Stage 5.3 — Progress dashboard & challenges
-- [ ] Dashboard: today (time/exercises/reps/best/XP) + history, per-exercise progression, PRs, volume,
+- [x] Dashboard: today (time/exercises/reps/best/XP) + history, per-exercise progression, PRs, volume,
       streak, levels; lightweight charts only where they help (spec §16).
-- [ ] Daily challenges generated from exercise definitions with record tracking (spec §16).
-- [ ] Muscle-group volume view (guidance, not medical) (spec §16/§22).
+- [x] Daily challenges generated from exercise definitions with record tracking (spec §16).
+- [x] Muscle-group volume view (guidance, not medical) (spec §16/§22).
 - **Done-when:** dashboard reflects real saved data; a daily challenge is playable + tracked.
 
 🎯 **Phase 5 exit gate:** performance-driven progression, records, and an honest dashboard all backed by
@@ -213,14 +213,14 @@ persisted data. Post milestone report.
 ## Phase 6 — Coach & No-Touch Mode (Milestone 6)
 
 ### Stage 6.1 — Voice coach & cues
-- [ ] Reusable sparse coaching lines (spec §15) via Speech Synthesis + audio cues + vibration.
-- [ ] Voice Coach ON/OFF; audio never mandatory; visual feedback always sufficient.
+- [x] Reusable sparse coaching lines (spec §15) via Speech Synthesis + audio cues + vibration.
+- [x] Voice Coach ON/OFF; audio never mandatory; visual feedback always sufficient.
 - **Done-when:** coaching plays during a workout and is fully disable-able without breaking the flow.
 
 ### Stage 6.2 — No-Touch workout mode
-- [ ] Full hands-free loop: announce → countdown → detect reps → feedback → detect completion → rest →
+- [x] Full hands-free loop: announce → countdown → detect reps → feedback → detect completion → rest →
       announce next → … → finish → results (spec §15).
-- [ ] Large in-workout visual feedback; rep count dominates screen (spec §19/§34).
+- [x] Large in-workout visual feedback; rep count dominates screen (spec §19/§34).
 - **Done-when:** a multi-exercise workout completes start→finish without touching the phone.
 
 🎯 **Phase 6 exit gate:** end-to-end no-touch workout with optional voice. Post milestone report.

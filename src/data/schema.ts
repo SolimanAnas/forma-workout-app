@@ -15,6 +15,8 @@ export interface ProfileRecord {
   id: 'me';
   createdAt: number;
   displayName?: string;
+  /** Total lifetime XP; level is derived from this (spec §27). */
+  xp: number;
 }
 
 /**
