@@ -18,6 +18,7 @@ export class ActiveWorkout {
   private unsubscribe: (() => void) | null = null;
   private rafId = 0;
   private started = false;
+  private samples = 0;
   private readonly updateListeners = new Set<SnapshotListener>();
   private readonly finishListeners = new Set<() => void>();
 
@@ -45,6 +46,7 @@ export class ActiveWorkout {
       try {
         await this.manager.start(profile.sensor);
         this.unsubscribe = this.manager.subscribe(profile.sensor, (sample) => {
+          this.samples++;
           const rep = this.detector?.push(sample);
           if (rep?.valid) this.engine.registerRep(this.now());
         });
@@ -53,6 +55,11 @@ export class ActiveWorkout {
       }
     }
     this.loop();
+  }
+
+  /** Number of sensor samples received so far — used to detect a dead sensor feed. */
+  get sampleCount(): number {
+    return this.samples;
   }
 
   /** Manual rep — used on devices without motion sensors and in tests. */

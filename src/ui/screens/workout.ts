@@ -2,7 +2,11 @@ import { EXERCISE_DEFINITIONS } from '../../domain/exercise/definitions';
 import type { WorkoutMode } from '../../domain/workout/types';
 import { setPendingLaunch } from '../../app/workout-context';
 import type { WorkoutLaunch } from '../../services/workout-factory';
+import { getDetectionProfile } from '../../domain/exercise/detection-profiles';
+import { motionSupported, requestMotionPermission } from '../../sensors/permissions';
 import { el, screen } from '../dom';
+
+const MOTION_SENSORS = new Set(['accelerometer', 'gyroscope', 'orientation']);
 
 /** Quick-start setup for the modes with a single-exercise UI (spec §17/§18/§21). */
 const STARTABLE: { mode: WorkoutMode; label: string }[] = [
@@ -49,7 +53,11 @@ export function renderWorkout(outlet: HTMLElement): void {
   applyVisibility();
 
   const start = el('button', { class: 'btn btn--primary', type: 'button' }, ['Start workout']);
-  start.addEventListener('click', () => {
+  const hint = el('p', { class: 'exercise-item__meta' }, [
+    'Starting will ask for motion-sensor permission to count your reps automatically.',
+  ]);
+
+  start.addEventListener('click', async () => {
     const m = mode.value as WorkoutMode;
     const launch: WorkoutLaunch = { mode: m, exerciseId: exercise.value };
     if (m === 'free') {
@@ -64,11 +72,20 @@ export function renderWorkout(outlet: HTMLElement): void {
     } else if (m === 'amrap') {
       launch.amrap = { durationMs: Math.max(1, Number(amrapMin.value) || 5) * 60000 };
     }
+
+    // Request motion permission NOW, inside the user gesture (required on iOS 13+).
+    const profile = getDetectionProfile(exercise.value);
+    if (profile && MOTION_SENSORS.has(profile.sensor) && motionSupported()) {
+      start.disabled = true;
+      start.textContent = 'Requesting permission…';
+      launch.motionPermission = await requestMotionPermission();
+    }
+
     setPendingLaunch(launch);
     window.location.hash = '#/active-workout';
   });
 
-  view.append(card, start);
+  view.append(card, start, hint);
   outlet.append(view);
 }
 

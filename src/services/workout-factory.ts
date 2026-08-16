@@ -1,4 +1,5 @@
 import type { WorkoutEngine, WorkoutMode } from '../domain/workout/types';
+import type { PermissionState } from '../sensors/types';
 import { FreeRepsEngine } from '../domain/workout/free-reps';
 import { SetsEngine } from '../domain/workout/sets';
 import { AmrapEngine } from '../domain/workout/amrap';
@@ -9,6 +10,8 @@ import { CircuitEngine, type CircuitStation } from '../domain/workout/circuit';
 export interface WorkoutLaunch {
   mode: WorkoutMode;
   exerciseId: string;
+  /** Motion permission outcome captured from the Start user-gesture (iOS requires the gesture). */
+  motionPermission?: PermissionState;
   free?: { targetReps?: number };
   sets?: { sets: number; reps: number; restMs: number };
   amrap?: { durationMs: number; repsPerRound?: number };

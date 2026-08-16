@@ -32,6 +32,16 @@ export async function renderProfile(outlet: HTMLElement): Promise<void> {
   unitsSelect.addEventListener('change', () => void setSetting('units', unitsSelect.value as Units));
   card.append(field('Units', unitsSelect));
 
+  // Rep-counting input methods (both on by default).
+  card.append(
+    toggleField('Tap to count reps', settings.tapToCount, (v) => void setSetting('tapToCount', v)),
+  );
+  card.append(
+    toggleField('Sensor counting', settings.sensorCounting, (v) =>
+      void setSetting('sensorCounting', v),
+    ),
+  );
+
   // Voice coach
   card.append(
     toggleField('Voice coach', settings.voiceCoach, (v) => void setSetting('voiceCoach', v)),

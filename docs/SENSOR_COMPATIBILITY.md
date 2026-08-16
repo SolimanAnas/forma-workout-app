@@ -49,5 +49,10 @@ The app auto-selects the best available mode and displays it:
 
 ## Test Log
 
-_(Append real-device results here during Phase 2.3 and Phase 7.2: device, OS, browser, per-sensor status,
-notes.)_
+- **2026-08-17 · Desktop Chromium (Playwright headless, Windows):** `DeviceMotionEvent` /
+  `DeviceOrientationEvent` are *present* (feature-detected `available`), but **no real motion data
+  flows** — a desktop browser exposes the API without hardware. Proximity/Barometer: Unsupported.
+  Takeaway: feature-detection alone can't confirm usable data; on-device testing is still required,
+  and desktop should offer a manual/dev rep mode.
+
+_(Append real-device results here during Phase 7.2: device, OS, browser, per-sensor status, notes.)_

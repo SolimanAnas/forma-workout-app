@@ -301,6 +301,25 @@ select,
   justify-content: center;
   margin-top: var(--space-4);
 }
+.rep-count.tappable {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: var(--radius);
+  transition: transform 0.05s ease;
+}
+.rep-count.tappable:active {
+  transform: scale(0.96);
+}
+.rep-count.tappable:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+}
+.workout__hint {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
 
 /* Update / offline banner */
 .pwa-banner {

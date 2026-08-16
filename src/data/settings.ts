@@ -8,6 +8,10 @@ export interface AppSettings {
   voiceCoach: boolean;
   units: Units;
   devMode: boolean;
+  /** Count a rep when the user taps the screen (spec §17 input method). */
+  tapToCount: boolean;
+  /** Count reps from motion sensors when available. */
+  sensorCounting: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -15,6 +19,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   voiceCoach: true,
   units: 'metric',
   devMode: false,
+  tapToCount: true,
+  sensorCounting: true,
 };
 
 export async function getSetting<K extends keyof AppSettings>(key: K): Promise<AppSettings[K]> {

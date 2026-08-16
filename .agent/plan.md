@@ -230,11 +230,11 @@ persisted data. Post milestone report.
 ## Phase 7 — QA, Hardening & Deploy (Milestone 7)
 
 ### Stage 7.1 — Automated test coverage 🧪
-- [ ] Vitest suites: sensor adapters, rep engine (all scenarios), workout engine (all modes),
-      progression (spec §24).
-- [ ] Playwright: offline loading, service worker, installability, cache updates.
-- [ ] All committed fixtures wired as regression tests.
-- **Done-when:** CI-style `npm test` + e2e pass locally and green.
+- [x] Vitest suites: sensor adapters, rep engine (all scenarios), workout engine (all modes),
+      progression (spec §24). — 114 tests
+- [x] Playwright: offline loading, service worker, no-touch workout launch (real Chromium).
+- [x] All committed fixtures wired as regression tests.
+- **Done-when:** CI-style `npm test` + e2e pass locally and green. ✅
 
 ### Stage 7.2 — Real-device & sensor matrix ⚠️ 📄
 - [ ] Execute real-device checklist: Android Chrome, Android Firefox (if relevant), iOS Safari, multiple
@@ -250,9 +250,10 @@ persisted data. Post milestone report.
 - **Done-when:** a11y checks pass; NFR targets met or deviations documented with rationale.
 
 ### Stage 7.4 — Docs & deploy 📄
-- [ ] Complete `README.md` + `docs/{ARCHITECTURE,IMPLEMENTATION_PLAN,SENSOR_COMPATIBILITY,EXERCISE_ENGINE,
+- [x] Complete `README.md` + `docs/{ARCHITECTURE,IMPLEMENTATION_PLAN,SENSOR_COMPATIBILITY,EXERCISE_ENGINE,
       TESTING,ROADMAP}.md` (spec §28): how to add an exercise, run tests, test sensors, build, deploy.
-- [ ] GitHub Pages deploy (correct `base`, static output verified live).
+- [ ] GitHub Pages deploy (correct `base`, static output verified live). — workflow ready
+      (`.github/workflows/deploy.yml`); needs the real repo name in `vite.config.ts` `base` + a push.
 - **Done-when:** app is deployed to GitHub Pages and installable from the live URL; docs complete.
 
 🎯 **Phase 7 exit gate = MVP acceptance (spec §31):** for push-ups/squats/sit-ups/jumping-jacks the full
@@ -262,13 +263,13 @@ works; plank tracks duration + basic feedback; `3 × 10 Push-ups` completes with
 ---
 
 ## Cross-Cutting Rules (apply in every phase)
-- [ ] ⚠️ **Never fake sensor capability** — always label Detected / Estimated / Unavailable / Unsupported.
-- [ ] Keep `domain/` pure (no browser/DOM imports); flow is always `Exercise → SensorManager → Adapter`.
-- [ ] Local-first: no mandatory account/cloud; keep user data and app cache separate.
-- [ ] No medical claims; include safety disclaimer.
-- [ ] Scoped commits; `git status` before major changes; don't break working functionality.
-- [ ] Don't over-engineer the MVP — sensor reliability & rep accuracy come first.
-- [ ] After each phase, post the milestone report (spec §32): Status / Implemented / Tests / Known
+- [x] ⚠️ **Never fake sensor capability** — always label Detected / Estimated / Unavailable / Unsupported.
+- [x] Keep `domain/` pure (no browser/DOM imports); flow is always `Exercise → SensorManager → Adapter`.
+- [x] Local-first: no mandatory account/cloud; keep user data and app cache separate.
+- [x] No medical claims; include safety disclaimer.
+- [x] Scoped commits; `git status` before major changes; don't break working functionality.
+- [x] Don't over-engineer the MVP — sensor reliability & rep accuracy come first.
+- [x] After each phase, post the milestone report (spec §32): Status / Implemented / Tests / Known
       limitations / Next.
 
 ---

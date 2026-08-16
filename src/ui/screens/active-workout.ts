@@ -10,7 +10,7 @@ import { saveWorkout } from '../../data/workouts';
 import { recordWorkout } from '../../services/progression-service';
 import { VoiceCoach } from '../../services/voice-coach';
 import { COACH } from '../../domain/coach/messages';
-import { getSetting } from '../../data/settings';
+import { getAllSettings } from '../../data/settings';
 import { el, screen } from '../dom';
 
 export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
@@ -21,7 +21,8 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
   }
 
   setState({ activeWorkout: true });
-  const coach = new VoiceCoach(await getSetting('voiceCoach'));
+  const settings = await getAllSettings();
+  const coach = new VoiceCoach(settings.voiceCoach);
 
   const engine = createEngine(launch);
   const session = new ActiveWorkout(engine, launch.exerciseId);
@@ -34,6 +35,23 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
   const detail = el('div', { class: 'workout__detail' }, ['']);
   view.append(title, big, label, detail);
 
+  // Tap-to-count: the rep number is a tap target (works alongside sensor counting).
+  if (settings.tapToCount) {
+    big.classList.add('tappable');
+    big.setAttribute('role', 'button');
+    big.setAttribute('tabindex', '0');
+    big.setAttribute('aria-label', 'Tap to count a rep');
+    const tap = (): void => session.simulateRep();
+    big.addEventListener('click', tap);
+    big.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        tap();
+      }
+    });
+    view.append(el('div', { class: 'workout__hint' }, ['Tap the number to count a rep']));
+  }
+
   // Controls.
   const controls = el('div', { class: 'workout__controls' });
   const skip = el('button', { class: 'btn', type: 'button' }, ['Skip rest']);
@@ -45,18 +63,35 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
   controls.append(skip, add30, finish);
   view.append(controls);
 
-  // Manual rep control when the driving sensor isn't available (e.g. desktop) or in dev mode.
+  // Decide whether the sensor can actually drive this workout: the API must exist AND motion
+  // permission must be granted. Feature-detection alone isn't enough (spec §8/§53).
   const profile = getDetectionProfile(launch.exerciseId);
   const sensorAvailable = profile
     ? (getSensorManager().getAdapter(profile.sensor)?.isAvailable() ?? false)
     : false;
-  if (!sensorAvailable) {
-    const simulate = el('button', { class: 'btn btn--primary', type: 'button' }, [
-      '＋ Rep (no sensor)',
-    ]);
+  const permission = launch.motionPermission ?? 'granted';
+  const sensorUsable = sensorAvailable && permission === 'granted' && settings.sensorCounting;
+
+  // Idempotent manual-rep fallback. Only needed when tap-to-count is OFF and the sensor can't
+  // drive the workout — otherwise tapping already guarantees the workout is never a dead end.
+  let manualAdded = false;
+  const addManualControl = (note: string): void => {
+    if (manualAdded || settings.tapToCount) return;
+    manualAdded = true;
+    const simulate = el('button', { class: 'btn btn--primary', type: 'button' }, ['＋ Rep']);
     simulate.addEventListener('click', () => session.simulateRep());
     view.append(simulate);
-    detail.textContent = 'Motion sensor unavailable — use manual reps.';
+    detail.textContent = note;
+  };
+
+  if (!sensorUsable && !settings.tapToCount) {
+    addManualControl(
+      permission === 'denied'
+        ? 'Motion permission denied — add reps manually, or enable it in browser settings.'
+        : !sensorAvailable
+          ? 'Motion sensor unavailable — add reps manually.'
+          : 'Motion sensor not ready — add reps manually.',
+    );
   }
 
   outlet.append(view);
@@ -67,7 +102,8 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
   const paint = (s: WorkoutSnapshot): void => {
     big.textContent = String(s.primaryValue);
     label.textContent = s.primaryLabel;
-    if (sensorAvailable || s.phase === 'RESTING') detail.textContent = s.detail ?? '';
+    // Keep the manual-fallback note visible; otherwise show live set/rest detail.
+    if (!manualAdded || s.phase === 'RESTING') detail.textContent = s.detail ?? '';
     view.dataset.phase = s.phase;
 
     if (prevPhase && s.phase !== prevPhase) {
@@ -143,12 +179,22 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
   window.addEventListener('hashchange', onLeave);
 
   // No-Touch mode: on a real sensor-driven workout, run a hands-free 3-2-1 countdown before
-  // starting. In manual mode (no sensor / tests) start immediately so controls are usable.
-  if (sensorAvailable) {
+  // starting. In manual mode (no sensor/permission) start immediately so controls are usable.
+  if (sensorUsable) {
     await runCountdown(big, label, coach);
     if (!outlet.contains(view)) return; // user navigated away mid-countdown
   }
   void session.start();
+
+  // Watchdog: if the sensor was supposed to drive the workout but no samples arrive, the feed is
+  // dead (no real hardware, blocked by a non-secure context, etc.) — reveal manual reps.
+  if (sensorUsable && !settings.tapToCount) {
+    window.setTimeout(() => {
+      if (outlet.contains(view) && session.sampleCount === 0) {
+        addManualControl('No motion detected — check phone placement, or add reps manually.');
+      }
+    }, 4000);
+  }
 }
 
 async function runCountdown(big: HTMLElement, label: HTMLElement, coach: VoiceCoach): Promise<void> {

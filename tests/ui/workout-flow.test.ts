@@ -4,7 +4,7 @@ import { DB_NAME } from '../../src/data/schema';
 import { _resetDbForTests } from '../../src/data/db';
 import { renderWorkout } from '../../src/ui/screens/workout';
 import { renderActiveWorkout } from '../../src/ui/screens/active-workout';
-import { setPendingLaunch } from '../../src/app/workout-context';
+import { setPendingLaunch, takePendingLaunch } from '../../src/app/workout-context';
 import { setState } from '../../src/app/state';
 import { listWorkouts } from '../../src/data/workouts';
 
@@ -29,6 +29,23 @@ describe('workout setup screen', () => {
     expect(o.querySelectorAll('select')).toHaveLength(2);
     expect(o.querySelector('button.btn--primary')?.textContent).toContain('Start');
   });
+
+  it('requests motion permission from the Start user-gesture (iOS-style)', async () => {
+    const requestPermission = vi.fn().mockResolvedValue('granted');
+    (globalThis as Record<string, unknown>).DeviceMotionEvent = class {
+      static requestPermission = requestPermission;
+    };
+
+    const o = outlet();
+    renderWorkout(o);
+    o.querySelector<HTMLButtonElement>('button.btn--primary')?.click();
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(requestPermission).toHaveBeenCalledTimes(1);
+    expect(takePendingLaunch()?.motionPermission).toBe('granted');
+
+    delete (globalThis as Record<string, unknown>).DeviceMotionEvent;
+  });
 });
 
 describe('active workout (no sensor → manual reps)', () => {
@@ -43,11 +60,12 @@ describe('active workout (no sensor → manual reps)', () => {
     const o = outlet();
     await renderActiveWorkout(o);
 
-    expect(o.querySelector('.rep-count')?.textContent).toBe('0');
-    const simulate = [...o.querySelectorAll('button')].find((b) => b.textContent?.includes('Rep'));
-    expect(simulate, 'manual rep button should appear without a sensor').toBeDefined();
+    const repCount = o.querySelector<HTMLElement>('.rep-count');
+    expect(repCount?.textContent).toBe('0');
+    // Tap-to-count is on by default → the rep number is the tap target.
+    expect(repCount?.classList.contains('tappable')).toBe(true);
 
-    simulate?.click();
+    repCount?.click();
     await nextFrames();
 
     // Reaching the target finishes the workout → results view + persisted record.

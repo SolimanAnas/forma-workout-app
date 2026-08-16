@@ -7,6 +7,9 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: 'prompt',
+      // Take control of the page as soon as the SW activates so the app is offline-capable
+      // on the next navigation (offline-first, spec §31). Updates still require a user prompt.
+      workbox: { clientsClaim: true, skipWaiting: false },
       // App shell precache; user data (IndexedDB) is intentionally NOT cached here.
       manifest: {
         name: 'Forma',

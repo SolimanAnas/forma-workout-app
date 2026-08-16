@@ -5,8 +5,14 @@ node_modules/
 
 # Build output
 dist/
+dev-dist/
 build/
 .vite/
+
+# Test artifacts
+test-results/
+playwright-report/
+coverage/
 
 # Environment
 .env

@@ -34,22 +34,36 @@ export class AccelerometerAdapter extends BaseAdapter {
   protected startImpl(): void {
     const Ctor = xyzSensorCtor('Accelerometer');
     if (Ctor) {
-      const sensor = new Ctor({ frequency: 60 });
-      sensor.addEventListener('reading', () => {
-        this.emit({
-          kind: this.kind,
-          t: performance.now(),
-          x: sensor.x ?? 0,
-          y: sensor.y ?? 0,
-          z: sensor.z ?? 0,
-          source: 'generic-sensor',
+      try {
+        const sensor = new Ctor({ frequency: 60 });
+        sensor.addEventListener('reading', () => {
+          this.emit({
+            kind: this.kind,
+            t: performance.now(),
+            x: sensor.x ?? 0,
+            y: sensor.y ?? 0,
+            z: sensor.z ?? 0,
+            source: 'generic-sensor',
+          });
         });
-      });
-      sensor.start();
-      this.sensor = sensor;
-      return;
+        // If the Generic Sensor fails (permission/secure-context), fall back to DeviceMotion.
+        sensor.addEventListener('error', () => {
+          this.sensor?.stop();
+          this.sensor = null;
+          this.startDeviceMotion();
+        });
+        sensor.start();
+        this.sensor = sensor;
+        return;
+      } catch {
+        // Construction/start threw — fall through to DeviceMotion.
+      }
     }
+    this.startDeviceMotion();
+  }
 
+  private startDeviceMotion(): void {
+    if (this.motionHandler) return;
     this.motionHandler = (e: DeviceMotionEvent) => {
       const a = e.accelerationIncludingGravity;
       if (!a) return;
