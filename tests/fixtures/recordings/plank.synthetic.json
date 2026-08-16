@@ -1,0 +1,250 @@
+{
+"id": "synthetic-plank",
+"formatVersion": 1,
+"exerciseId": "plank",
+"startedAt": 0,
+"durationMs": 483.333,
+"sampleCount": 30,
+"samples": [
+{
+"kind": "accelerometer",
+"t": 0.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 16.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 33.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 50.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 66.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 83.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 100.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 116.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 133.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 150.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 166.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 183.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 200.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 216.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 233.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 250.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 266.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 283.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 300.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 316.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 333.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 350.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 366.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 383.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 400.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 416.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 433.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 450.0,
+"x": -0.05,
+"y": 0.0,
+"z": 9.76,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 466.667,
+"x": -0.05,
+"y": 0.0,
+"z": 9.81,
+"source": "replay"
+},
+{
+"kind": "accelerometer",
+"t": 483.333,
+"x": -0.05,
+"y": 0.0,
+"z": 9.86,
+"source": "replay"
+}
+]
+}

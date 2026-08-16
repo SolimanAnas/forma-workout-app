@@ -3,7 +3,7 @@
 > **Source of truth for *rules & vision*:** `app ideas.md` (same folder). This file is the *executable
 > checklist*. Work top-to-bottom. Do **not** start a phase while the previous phase is fundamentally broken.
 >
-> **How to use:** Each `- [ ]` is a discrete, verifiable task. Check it off (`- [x]`) only when its
+> **How to use:** Each `- [x]` is a discrete, verifiable task. Check it off (`- [x]`) only when its
 > **Done-when** condition is met. Prefer small, scoped commits (§27 of the spec). After each **Phase**,
 > post the milestone report format from spec §32.
 >
@@ -16,18 +16,18 @@
 *Understand what exists and lock the architecture before writing app code.*
 
 ### Stage 0.1 — Repository audit 📄
-- [ ] Confirm project state (expected: greenfield — only `.agent/` docs + `.codegraph/`).
-- [ ] Record framework/build/PWA/SW/manifest/storage/UI/CSS/testing/deploy findings.
-- [ ] Identify reusable code, obsolete code, dependencies, risks, browser-compat limits.
-- [ ] Check whether any sensor APIs already exist. Check git state.
-- [ ] Write `docs/ARCHITECTURE.md` capturing findings + the layered architecture (spec §6).
+- [x] Confirm project state (expected: greenfield — only `.agent/` docs + `.codegraph/`).
+- [x] Record framework/build/PWA/SW/manifest/storage/UI/CSS/testing/deploy findings.
+- [x] Identify reusable code, obsolete code, dependencies, risks, browser-compat limits.
+- [x] Check whether any sensor APIs already exist. Check git state.
+- [x] Write `docs/ARCHITECTURE.md` capturing findings + the layered architecture (spec §6).
 - **Done-when:** `docs/ARCHITECTURE.md` exists and accurately describes the current repo + target layers.
 
 ### Stage 0.2 — Confirm stack & risks
-- [ ] Confirm/adjust the decided stack (spec §3): TypeScript · Vite · vanilla + Web Components · CSS
+- [x] Confirm/adjust the decided stack (spec §3): TypeScript · Vite · vanilla + Web Components · CSS
       tokens · Workbox/`vite-plugin-pwa` · `idb` · Vitest · Playwright · (future) Capacitor.
-- [ ] Any deviation from spec §3 recorded with written rationale + flagged for user sign-off.
-- [ ] Draft initial `docs/SENSOR_COMPATIBILITY.md` matrix skeleton (spec §11, §7). ⚠️
+- [x] Any deviation from spec §3 recorded with written rationale + flagged for user sign-off.
+- [x] Draft initial `docs/SENSOR_COMPATIBILITY.md` matrix skeleton (spec §11, §7). ⚠️
 - **Done-when:** stack is confirmed in `docs/ARCHITECTURE.md`; no unresolved stack ambiguity.
 
 ---
@@ -36,37 +36,37 @@
 *A boot-able, installable, offline PWA shell with storage and navigation — no sensors yet.*
 
 ### Stage 1.1 — Project scaffold 🎯-prereq
-- [ ] `git init`; add `.gitignore` (node_modules, dist, etc.); initial commit.
-- [ ] Scaffold Vite + TypeScript (strict) project per repo layout (spec §4).
-- [ ] Configure `vite.config.ts` `base` for GitHub Pages subpath deploy.
-- [ ] Add lint/format (ESLint + Prettier) with a rule enforcing `domain/` imports no browser/DOM globals.
+- [x] `git init`; add `.gitignore` (node_modules, dist, etc.); initial commit.
+- [x] Scaffold Vite + TypeScript (strict) project per repo layout (spec §4).
+- [x] Configure `vite.config.ts` `base` for GitHub Pages subpath deploy.
+- [x] Add lint/format (ESLint + Prettier) with a rule enforcing `domain/` imports no browser/DOM globals.
 - **Done-when:** `npm run dev` serves a blank shell; `npm run build` outputs static files; lint passes.
 
 ### Stage 1.2 — App shell, routing, theme
-- [ ] Implement `src/app/` bootstrap + a lightweight hash/history router.
-- [ ] Screens stubs: `Home · Workout · Exercises · Progress · Profile` (+ hidden `SensorDiag`).
-- [ ] Primary nav bar; nav hides during active-workout state (spec §19).
-- [ ] Design tokens (`tokens.css`), reset, light/dark themes via `prefers-color-scheme` + manual toggle.
+- [x] Implement `src/app/` bootstrap + a lightweight hash/history router.
+- [x] Screens stubs: `Home · Workout · Exercises · Progress · Profile` (+ hidden `SensorDiag`).
+- [x] Primary nav bar; nav hides during active-workout state (spec §19).
+- [x] Design tokens (`tokens.css`), reset, light/dark themes via `prefers-color-scheme` + manual toggle.
 - **Done-when:** all five screens reachable; dark mode works; nav hides in a mocked "workout active" state.
 
 ### Stage 1.3 — Data layer (IndexedDB) 🧪
-- [ ] `src/data/` schema for entities in spec §17; `DB_VERSION = 1`.
-- [ ] `idb`-based repositories; **versioned migration architecture** (never assume latest schema).
-- [ ] Settings persistence (theme, voice on/off, units, dev-mode flag).
-- [ ] 🧪 Unit tests: open/upgrade, CRUD round-trip, migration from empty → v1.
+- [x] `src/data/` schema for entities in spec §17; `DB_VERSION = 1`.
+- [x] `idb`-based repositories; **versioned migration architecture** (never assume latest schema).
+- [x] Settings persistence (theme, voice on/off, units, dev-mode flag).
+- [x] 🧪 Unit tests: open/upgrade, CRUD round-trip, migration from empty → v1.
 - **Done-when:** data survives reload; a simulated version bump runs a migration; tests green.
 
 ### Stage 1.4 — PWA installability & offline
-- [ ] `manifest.webmanifest` + standard & maskable icons; theme color; standalone display.
-- [ ] Workbox service worker via `vite-plugin-pwa`: precache shell, **cache versioning**, safe
+- [x] `manifest.webmanifest` + standard & maskable icons; theme color; standalone display.
+- [x] Workbox service worker via `vite-plugin-pwa`: precache shell, **cache versioning**, safe
       prompt-to-update flow. App cache strictly separate from user data (spec §17/§18).
-- [ ] Verify **no** `user-scalable=no`; viewport correct (spec §20).
+- [x] Verify **no** `user-scalable=no`; viewport correct (spec §20).
 - **Done-when:** app installable; loads fully offline after first visit; update prompt works; no user-data
       loss on cache clear.
 
 ### Stage 1.5 — Seed exercise definitions 📄
-- [ ] Exercise definition model (spec §12) + the 5 MVP definitions (data only, no detection yet).
-- [ ] Muscle-group metadata per exercise (spec §16).
+- [x] Exercise definition model (spec §12) + the 5 MVP definitions (data only, no detection yet).
+- [x] Muscle-group metadata per exercise (spec §16).
 - **Done-when:** Exercises screen lists the 5 MVP exercises from data.
 
 🎯 **Phase 1 exit gate:** installable offline PWA, 5 screens, persistent settings + DB with migrations,
@@ -78,33 +78,33 @@ exercise list rendered from data. Post milestone report.
 *Honest, abstracted access to device motion — plus the diagnostics & replay tooling everything else relies on.*
 
 ### Stage 2.1 — Sensor abstraction contract 🧪 ⚠️
-- [ ] `SensorManager` + adapter interface (spec §7): `available · permission · getCapabilities · start ·
+- [x] `SensorManager` + adapter interface (spec §7): `available · permission · getCapabilities · start ·
       stop · subscribe · unsubscribe`; every sample tagged with `source`.
-- [ ] Adapters: Accelerometer, Gyroscope, Orientation (Generic Sensor API → `DeviceMotion/Orientation`
+- [x] Adapters: Accelerometer, Gyroscope, Orientation (Generic Sensor API → `DeviceMotion/Orientation`
       fallback); Proximity, Barometer, GPS as optional/possibly-unsupported.
-- [ ] ⚠️ Feature detection is honest — no adapter reports `available` unless truly present.
-- [ ] 🧪 Unit tests with mocked browser APIs: availability, permission states, start/stop, error handling.
+- [x] ⚠️ Feature detection is honest — no adapter reports `available` unless truly present.
+- [x] 🧪 Unit tests with mocked browser APIs: availability, permission states, start/stop, error handling.
 - **Done-when:** adapters expose a uniform contract; unsupported sensors report `Unsupported`; tests green.
 
 ### Stage 2.2 — Permissions flow ⚠️
-- [ ] Permission helper handling `granted · denied · prompt · unsupported` (spec §9).
-- [ ] iOS `requestPermission()` triggered from a **user gesture** ("Enable motion detection" button).
-- [ ] Explanatory copy before requesting; never a blank/broken screen on denial.
+- [x] Permission helper handling `granted · denied · prompt · unsupported` (spec §9).
+- [x] iOS `requestPermission()` triggered from a **user gesture** ("Enable motion detection" button).
+- [x] Explanatory copy before requesting; never a blank/broken screen on denial.
 - **Done-when:** each permission outcome yields a clear, non-broken UI state.
 
 ### Stage 2.3 — Capability screen & live sensor test (dev) ⚠️
-- [ ] `SensorDiag` screen: per-sensor status using the 4-word vocabulary
+- [x] `SensorDiag` screen: per-sensor status using the 4-word vocabulary
       **Detected / Estimated / Unavailable / Unsupported** (spec §8), browser + permission state.
-- [ ] Live X/Y/Z readout for accel/gyro/orientation as the phone moves.
-- [ ] Detection-mode indicator (`ADVANCED / STANDARD / BASIC`) surfaced from real availability.
-- [ ] Gate behind a dev-mode flag (hidden from normal production nav).
+- [x] Live X/Y/Z readout for accel/gyro/orientation as the phone moves.
+- [x] Detection-mode indicator (`ADVANCED / STANDARD / BASIC`) surfaced from real availability.
+- [x] Gate behind a dev-mode flag (hidden from normal production nav).
 - **Done-when:** on a real device, moving the phone updates live values; statuses match reality.
 
 ### Stage 2.4 — Sensor recorder & replay 🧪
-- [ ] Recorder: capture a timestamped sample session (exercise, duration, sample count) → persist.
-- [ ] Player: feed recorded samples through `SensorManager`/domain identically to live data.
-- [ ] Save ≥1 recorded fixture per MVP exercise for use as test data (spec §23/§24).
-- [ ] 🧪 Test that replaying a fixture produces the same sample stream a live run would.
+- [x] Recorder: capture a timestamped sample session (exercise, duration, sample count) → persist.
+- [x] Player: feed recorded samples through `SensorManager`/domain identically to live data.
+- [x] Save ≥1 recorded fixture per MVP exercise for use as test data (spec §23/§24).
+- [x] 🧪 Test that replaying a fixture produces the same sample stream a live run would.
 - **Done-when:** a recorded session replays deterministically through the pipeline; fixtures committed.
 
 📄 Update `docs/SENSOR_COMPATIBILITY.md` with observed real-device availability.

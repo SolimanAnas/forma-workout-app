@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Forma">
+  <rect width="512" height="512" fill="#0b0b0f"/>
+  <!-- content kept within the central maskable safe zone (~80%) -->
+  <g fill="#4f8cff">
+    <rect x="176" y="136" width="160" height="40" rx="8"/>
+    <rect x="176" y="136" width="40" height="240" rx="8"/>
+    <rect x="176" y="236" width="128" height="40" rx="8"/>
+  </g>
+</svg>
