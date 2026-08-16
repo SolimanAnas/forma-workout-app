@@ -23,11 +23,21 @@ beforeEach(async () => {
 });
 
 describe('workout setup screen', () => {
-  it('renders exercise + mode selectors and a start button', () => {
+  it('renders an exercise button grid, a mode control, and a start button', () => {
     const o = outlet();
     renderWorkout(o);
-    expect(o.querySelectorAll('select')).toHaveLength(2);
+    expect(o.querySelectorAll('.pick-btn')).toHaveLength(5);
+    expect(o.querySelectorAll('.segmented__btn')).toHaveLength(3);
     expect(o.querySelector('button.btn--primary')?.textContent).toContain('Start');
+  });
+
+  it('selecting an exercise button updates the pressed state', () => {
+    const o = outlet();
+    renderWorkout(o);
+    const buttons = [...o.querySelectorAll<HTMLButtonElement>('.pick-btn')];
+    buttons[2].click();
+    expect(buttons[2].getAttribute('aria-pressed')).toBe('true');
+    expect(buttons.filter((b) => b.getAttribute('aria-pressed') === 'true')).toHaveLength(1);
   });
 
   it('requests motion permission from the Start user-gesture (iOS-style)', async () => {

@@ -36,7 +36,7 @@ test.describe('Forma PWA', () => {
     page,
   }) => {
     await page.goto('./#/workout', { waitUntil: 'domcontentloaded' });
-    await page.selectOption('select[aria-label="Mode"]', 'free');
+    await page.locator('.segmented__btn', { hasText: 'Free' }).click();
     await page.locator('button.btn--primary', { hasText: 'Start' }).click();
 
     await expect(page.locator('.workout .rep-count')).toBeVisible();
@@ -47,7 +47,7 @@ test.describe('Forma PWA', () => {
 
   test('tap-to-count increments reps and completes a workout', async ({ page }) => {
     await page.goto('./#/workout', { waitUntil: 'domcontentloaded' });
-    await page.selectOption('select[aria-label="Mode"]', 'free');
+    await page.locator('.segmented__btn', { hasText: 'Free' }).click();
     await page.locator('input[type="number"]').first().fill('2'); // target 2 reps
     await page.locator('button.btn--primary', { hasText: 'Start' }).click();
 

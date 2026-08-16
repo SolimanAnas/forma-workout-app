@@ -29,10 +29,13 @@ describe('screen render smoke tests (jsdom)', () => {
     expect(o.querySelector('a.btn--primary')?.getAttribute('href')).toBe('#/workout');
   });
 
-  it('Workout renders the setup form (exercise + mode + start)', () => {
+  it('Workout renders exercise buttons + a mode control + start (no combo box)', () => {
     const o = outlet();
     renderWorkout(o);
-    expect(o.querySelectorAll('select')).toHaveLength(2);
+    expect(o.querySelectorAll('select')).toHaveLength(0); // exercises are buttons, not a dropdown
+    expect(o.querySelectorAll('.pick-btn')).toHaveLength(5);
+    expect(o.querySelector('.pick-btn[aria-pressed="true"]')).not.toBeNull();
+    expect(o.querySelectorAll('.segmented__btn')).toHaveLength(3);
     expect(o.querySelector('button.btn--primary')?.textContent).toContain('Start');
   });
 

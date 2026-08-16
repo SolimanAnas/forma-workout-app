@@ -1,22 +1,33 @@
-/* Design tokens — dark-first fitness theme (spec §19).
- * Theme resolution:
- *   - No data-theme attr  → follow OS (dark default, light via prefers-color-scheme).
- *   - [data-theme="dark"] → force dark.
- *   - [data-theme="light"]→ force light.
- */
+/* Design tokens — athletic, energetic, dark-first (spec §19). Electric-lime accent on charcoal. */
 :root {
   /* dark defaults */
-  --color-bg: #0b0b0f;
-  --color-surface: #16161d;
-  --color-surface-2: #1f1f28;
-  --color-border: #2a2a35;
-  --color-text: #f4f4f6;
-  --color-muted: #a0a0ab;
-  --color-accent: #4f8cff;
-  --color-accent-contrast: #ffffff;
-  --color-success: #35c46b;
+  --color-bg: #0b0c0f;
+  --color-surface: #14161b;
+  --color-surface-2: #1b1e25;
+  --color-elevated: #23272f;
+  --color-border: #272b34;
+  --color-border-strong: #333844;
+  --color-text: #f3f5f7;
+  --color-muted: #949aa6;
+  --color-faint: #6a707c;
+
+  --color-accent: #d0f24a; /* electric lime */
+  --color-accent-strong: #bce02c;
+  --color-on-accent: #10140a; /* dark ink on lime */
+  --color-accent-text: #cdef4e; /* lime used as text on dark */
+  --color-accent-soft: rgba(208, 242, 74, 0.12);
+
+  --color-success: #4bd07b;
   --color-warning: #f5b23d;
-  --color-danger: #f0524b;
+  --color-danger: #ff5c57;
+
+  --grad-accent: linear-gradient(135deg, #d7f75a 0%, #a9dd1f 100%);
+  --grad-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0));
+  --glow-accent: 0 0 0 1px rgba(208, 242, 74, 0.4), 0 8px 28px rgba(176, 224, 44, 0.22);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.55);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -24,38 +35,74 @@
   --space-4: 16px;
   --space-5: 24px;
   --space-6: 32px;
+  --space-7: 48px;
 
-  --radius: 12px;
-  --radius-sm: 8px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
 
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --nav-height: 60px;
-  --header-height: 52px;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Roboto Mono', Menlo, Consolas, monospace;
+  --tracking-label: 0.14em;
+
+  --nav-height: 64px;
+  --header-height: 56px;
+  --content-max: 640px;
 }
 
-/* light palette, shared by OS-light and explicit light */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --color-bg: #f7f7fa;
+    --color-bg: #f5f6f1;
     --color-surface: #ffffff;
-    --color-surface-2: #eef0f4;
-    --color-border: #dfe1e8;
-    --color-text: #14141a;
-    --color-muted: #5a5a66;
+    --color-surface-2: #eef0e9;
+    --color-elevated: #ffffff;
+    --color-border: #e2e4db;
+    --color-border-strong: #d2d5c9;
+    --color-text: #14161a;
+    --color-muted: #5c6270;
+    --color-faint: #8a909c;
+    --color-accent: #a6d411;
+    --color-accent-strong: #8fbb08;
+    --color-on-accent: #0e1206;
+    --color-accent-text: #5c7a08;
+    --color-accent-soft: rgba(140, 187, 8, 0.14);
+    --grad-accent: linear-gradient(135deg, #bfe63a 0%, #97c40a 100%);
+    --grad-surface: linear-gradient(180deg, rgba(0, 0, 0, 0.015), rgba(0, 0, 0, 0));
+    --glow-accent: 0 0 0 1px rgba(140, 187, 8, 0.4), 0 8px 24px rgba(140, 187, 8, 0.2);
+    --shadow-sm: 0 1px 2px rgba(20, 22, 26, 0.06);
+    --shadow-md: 0 8px 22px rgba(20, 22, 26, 0.1);
+    --shadow-lg: 0 18px 44px rgba(20, 22, 26, 0.14);
   }
 }
 
 :root[data-theme='light'] {
-  --color-bg: #f7f7fa;
+  --color-bg: #f5f6f1;
   --color-surface: #ffffff;
-  --color-surface-2: #eef0f4;
-  --color-border: #dfe1e8;
-  --color-text: #14141a;
-  --color-muted: #5a5a66;
+  --color-surface-2: #eef0e9;
+  --color-elevated: #ffffff;
+  --color-border: #e2e4db;
+  --color-border-strong: #d2d5c9;
+  --color-text: #14161a;
+  --color-muted: #5c6270;
+  --color-faint: #8a909c;
+  --color-accent: #a6d411;
+  --color-accent-strong: #8fbb08;
+  --color-on-accent: #0e1206;
+  --color-accent-text: #5c7a08;
+  --color-accent-soft: rgba(140, 187, 8, 0.14);
+  --grad-accent: linear-gradient(135deg, #bfe63a 0%, #97c40a 100%);
+  --grad-surface: linear-gradient(180deg, rgba(0, 0, 0, 0.015), rgba(0, 0, 0, 0));
+  --glow-accent: 0 0 0 1px rgba(140, 187, 8, 0.4), 0 8px 24px rgba(140, 187, 8, 0.2);
+  --shadow-sm: 0 1px 2px rgba(20, 22, 26, 0.06);
+  --shadow-md: 0 8px 22px rgba(20, 22, 26, 0.1);
+  --shadow-lg: 0 18px 44px rgba(20, 22, 26, 0.14);
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }

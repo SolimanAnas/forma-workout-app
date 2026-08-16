@@ -4,77 +4,110 @@ import { setPendingLaunch } from '../../app/workout-context';
 import type { WorkoutLaunch } from '../../services/workout-factory';
 import { getDetectionProfile } from '../../domain/exercise/detection-profiles';
 import { motionSupported, requestMotionPermission } from '../../sensors/permissions';
+import { EXERCISE_ICONS } from '../exercise-icons';
 import { el, screen } from '../dom';
 
 const MOTION_SENSORS = new Set(['accelerometer', 'gyroscope', 'orientation']);
 
-/** Quick-start setup for the modes with a single-exercise UI (spec §17/§18/§21). */
 const STARTABLE: { mode: WorkoutMode; label: string }[] = [
-  { mode: 'free', label: 'Free reps' },
+  { mode: 'free', label: 'Free' },
   { mode: 'sets', label: 'Sets' },
   { mode: 'amrap', label: 'AMRAP' },
 ];
 
 export function renderWorkout(outlet: HTMLElement): void {
-  const view = screen('Workout', 'Pick an exercise and mode, then start.');
+  const view = screen('Workout', 'Choose an exercise and mode, then go.');
+
+  let selectedExerciseId = EXERCISE_DEFINITIONS[0].id;
+  let selectedMode: WorkoutMode = 'free';
+
   const card = el('div', { class: 'card' });
 
-  const exercise = el('select', { 'aria-label': 'Exercise' }) as HTMLSelectElement;
+  // ── Exercise picker (buttons, not a dropdown) ──
+  card.append(el('div', { class: 'eyebrow' }, ['Exercise']));
+  const grid = el('div', { class: 'pick-grid', role: 'group', 'aria-label': 'Exercise' });
+  const exerciseButtons: HTMLButtonElement[] = [];
   for (const ex of EXERCISE_DEFINITIONS) {
-    exercise.append(el('option', { value: ex.id }, [ex.name]));
+    const btn = el('button', { class: 'pick-btn', type: 'button' }, [
+      el('span', { class: 'pick-btn__icon', 'aria-hidden': 'true' }, [EXERCISE_ICONS[ex.id] ?? '🏋️']),
+      el('span', { class: 'pick-btn__name' }, [ex.name]),
+      el('span', { class: 'pick-btn__meta' }, [ex.category]),
+    ]) as HTMLButtonElement;
+    btn.dataset.id = ex.id;
+    btn.setAttribute('aria-pressed', String(ex.id === selectedExerciseId));
+    btn.addEventListener('click', () => {
+      selectedExerciseId = ex.id;
+      for (const b of exerciseButtons) b.setAttribute('aria-pressed', String(b.dataset.id === ex.id));
+    });
+    exerciseButtons.push(btn);
+    grid.append(btn);
   }
-  card.append(field('Exercise', exercise));
+  card.append(grid);
 
-  const mode = el('select', { 'aria-label': 'Mode' }) as HTMLSelectElement;
-  for (const m of STARTABLE) mode.append(el('option', { value: m.mode }, [m.label]));
-  card.append(field('Mode', mode));
+  // ── Mode picker (segmented control) ──
+  card.append(el('div', { class: 'eyebrow', style: 'margin-top:var(--space-4)' }, ['Mode']));
+  const segmented = el('div', { class: 'segmented', role: 'group', 'aria-label': 'Mode' });
+  const modeButtons: HTMLButtonElement[] = [];
+  for (const m of STARTABLE) {
+    const btn = el('button', { class: 'segmented__btn', type: 'button' }, [m.label]) as HTMLButtonElement;
+    btn.dataset.mode = m.mode;
+    btn.setAttribute('aria-pressed', String(m.mode === selectedMode));
+    btn.addEventListener('click', () => {
+      selectedMode = m.mode;
+      for (const b of modeButtons) b.setAttribute('aria-pressed', String(b.dataset.mode === m.mode));
+      applyVisibility();
+    });
+    modeButtons.push(btn);
+    segmented.append(btn);
+  }
+  card.append(segmented);
 
-  // Per-mode params.
+  // ── Per-mode params ──
   const targetReps = numberInput('20');
   const setsCount = numberInput('3');
   const setsReps = numberInput('12');
   const restSec = numberInput('60');
   const amrapMin = numberInput('5');
 
-  const freeRow = field('Target reps (0 = open)', targetReps);
-  const setsRow1 = field('Sets', setsCount);
-  const setsRow2 = field('Reps per set', setsReps);
-  const setsRow3 = field('Rest (seconds)', restSec);
-  const amrapRow = field('Duration (minutes)', amrapMin);
-  card.append(freeRow, setsRow1, setsRow2, setsRow3, amrapRow);
+  const freeGroup = group([field('Target reps (0 = open)', targetReps)]);
+  const setsGroup = group([
+    field('Sets', setsCount),
+    field('Reps per set', setsReps),
+    field('Rest (seconds)', restSec),
+  ]);
+  const amrapGroup = group([field('Duration (minutes)', amrapMin)]);
+  card.append(freeGroup, setsGroup, amrapGroup);
 
   const applyVisibility = (): void => {
-    const m = mode.value as WorkoutMode;
-    freeRow.hidden = m !== 'free';
-    setsRow1.hidden = setsRow2.hidden = setsRow3.hidden = m !== 'sets';
-    amrapRow.hidden = m !== 'amrap';
+    freeGroup.hidden = selectedMode !== 'free';
+    setsGroup.hidden = selectedMode !== 'sets';
+    amrapGroup.hidden = selectedMode !== 'amrap';
   };
-  mode.addEventListener('change', applyVisibility);
   applyVisibility();
 
+  // ── Start ──
   const start = el('button', { class: 'btn btn--primary', type: 'button' }, ['Start workout']);
   const hint = el('p', { class: 'exercise-item__meta' }, [
     'Starting will ask for motion-sensor permission to count your reps automatically.',
   ]);
 
   start.addEventListener('click', async () => {
-    const m = mode.value as WorkoutMode;
-    const launch: WorkoutLaunch = { mode: m, exerciseId: exercise.value };
-    if (m === 'free') {
+    const launch: WorkoutLaunch = { mode: selectedMode, exerciseId: selectedExerciseId };
+    if (selectedMode === 'free') {
       const t = Number(targetReps.value) || 0;
       launch.free = t > 0 ? { targetReps: t } : {};
-    } else if (m === 'sets') {
+    } else if (selectedMode === 'sets') {
       launch.sets = {
         sets: Math.max(1, Number(setsCount.value) || 3),
         reps: Math.max(1, Number(setsReps.value) || 12),
         restMs: Math.max(0, Number(restSec.value) || 60) * 1000,
       };
-    } else if (m === 'amrap') {
+    } else if (selectedMode === 'amrap') {
       launch.amrap = { durationMs: Math.max(1, Number(amrapMin.value) || 5) * 60000 };
     }
 
     // Request motion permission NOW, inside the user gesture (required on iOS 13+).
-    const profile = getDetectionProfile(exercise.value);
+    const profile = getDetectionProfile(selectedExerciseId);
     if (profile && MOTION_SENSORS.has(profile.sensor) && motionSupported()) {
       start.disabled = true;
       start.textContent = 'Requesting permission…';
@@ -87,6 +120,10 @@ export function renderWorkout(outlet: HTMLElement): void {
 
   view.append(card, start, hint);
   outlet.append(view);
+}
+
+function group(children: HTMLElement[]): HTMLElement {
+  return el('div', { class: 'form-group' }, children);
 }
 
 function field(label: string, control: HTMLElement): HTMLElement {
