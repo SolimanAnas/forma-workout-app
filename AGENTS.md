@@ -26,3 +26,21 @@ Sensor-powered fitness PWA that uses smartphone motion sensors to automatically 
 - Logical, scoped commits
 - `git status` before major changes
 - Never destroy unrelated changes
+
+## Relevant Skills (for delegation)
+When delegating tasks, load these skills:
+- `pwa-development` — Service workers, Workbox, offline caching, PWA manifest
+- `playwright-testing` — E2E testing, browser automation, test patterns
+- `frontend-design` — UI/UX design, CSS tokens, component styling
+- `security-review` — Sensor data handling, local-first data security
+
+## Delegation Workflow
+1. Claude plans the task (architecture, approach)
+2. Write a clear prompt with:
+   - Task description
+   - File paths to modify
+   - Expected outcome
+   - Constraints (domain purity, sensor flow rules)
+3. Delegate to OpenCode with relevant skills loaded
+4. Review the git diff
+5. Run `npm run typecheck` and `npm test` to verify
