@@ -13,4 +13,9 @@ export const EXERCISE_ICONS: Record<string, string> = {
   burpee: '🔥',
   'pull-up': '🏋️',
   'leg-flutters': '🦵',
+  'jump-squat': '⚡',
+  'calf-raises': '🦶',
+  'side-plank': '🧘',
+  'standing-knee-raises': '🏃',
+  'jump-rope': '🪢',
 };

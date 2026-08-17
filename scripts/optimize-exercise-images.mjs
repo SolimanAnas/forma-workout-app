@@ -27,6 +27,11 @@ const BASES = {
   'mountain-climbers': 'mountain-climbers',
   burpee: 'burpees',
   'pull-up': 'pull-up',
+  'jump-squat': 'jump-squat',
+  'calf-raises': 'calf-raises',
+  'standing-knee-raises': 'Standing-Knee-Raises',
+  'jump-rope': 'jump-rope',
+  'side-plank': 'side-plank',
 };
 
 // Icon source override: crunch uses the sit-up icon (no dedicated crunch icon).
@@ -64,8 +69,13 @@ for (const [id, base] of Object.entries(BASES)) {
     console.warn('  ! no icon source for', id);
   }
 
-  // ── Poster (detailed, aspect preserved) ──
-  const posterSrc = findFirst([`${base}-detailed.png`, `${base}.png`, `${base}-icon.png`]);
+  // ── Poster (detailed, aspect preserved) — accept both -detailed and -details spellings ──
+  const posterSrc = findFirst([
+    `${base}-detailed.png`,
+    `${base}-details.png`,
+    `${base}.png`,
+    `${base}-icon.png`,
+  ]);
   if (posterSrc) {
     await sharp(join(SRC, posterSrc))
       .resize(POSTER_MAX, POSTER_MAX, { fit: 'inside', withoutEnlargement: true })

@@ -5,12 +5,15 @@ import { getPlacement } from '../../src/domain/exercise/placement';
 
 describe('exercise definitions', () => {
   it('defines the full exercise library', () => {
-    expect(EXERCISE_DEFINITIONS).toHaveLength(13);
+    expect(EXERCISE_DEFINITIONS).toHaveLength(18);
     expect(EXERCISE_DEFINITIONS.map((e) => e.id).sort()).toEqual(
       [
         'burpee',
+        'calf-raises',
         'crunch',
         'high-knees',
+        'jump-rope',
+        'jump-squat',
         'jumping-jack',
         'leg-flutters',
         'leg-raises',
@@ -19,10 +22,21 @@ describe('exercise definitions', () => {
         'pull-up',
         'pushup',
         'russian-twist',
+        'side-plank',
         'situp',
         'squat',
+        'standing-knee-raises',
       ].sort(),
     );
+  });
+
+  it('is arranged by category (strength → core → cardio)', () => {
+    const order = EXERCISE_DEFINITIONS.map((e) => e.category);
+    const firstCore = order.indexOf('core');
+    const firstCardio = order.indexOf('cardio');
+    // No strength after the first core, and no core after the first cardio.
+    expect(order.slice(firstCore).includes('strength')).toBe(false);
+    expect(order.slice(firstCardio).includes('core')).toBe(false);
   });
 
   it('has unique ids', () => {

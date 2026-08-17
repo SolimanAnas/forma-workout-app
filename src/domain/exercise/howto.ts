@@ -66,6 +66,31 @@ export const HOWTO: Record<string, string[]> = {
     'Pull your chest toward the bar, driving your elbows down.',
     'Lower under control to a full hang.',
   ],
+  'jump-squat': [
+    'Drop into a squat, chest up and core braced.',
+    'Explode straight up into a jump, extending fully.',
+    'Land softly back into a squat and repeat.',
+  ],
+  'calf-raises': [
+    'Stand tall with feet hip-width apart.',
+    'Push through the balls of your feet to lift your heels high.',
+    'Lower slowly under control — feel the stretch.',
+  ],
+  'side-plank': [
+    'Lie on your side, propped on one forearm under your shoulder.',
+    'Lift your hips so your body is a straight line.',
+    'Hold and breathe steadily — switch sides halfway.',
+  ],
+  'standing-knee-raises': [
+    'Stand tall, core engaged.',
+    'Drive one knee up toward hip height, then lower.',
+    'Alternate legs with a steady rhythm.',
+  ],
+  'jump-rope': [
+    'Jump with both feet, staying on the balls of your feet.',
+    'Turn the rope (or mime it) with small wrist circles.',
+    'Keep quick, light bounces and a steady cadence.',
+  ],
 };
 
 export function getHowto(exerciseId: string): string[] {

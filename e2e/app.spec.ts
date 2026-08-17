@@ -10,7 +10,7 @@ test.describe('Forma PWA', () => {
 
     await page.locator('.app-nav__item[href="#/exercises"]').click();
     await expect(page.locator('.screen__title')).toHaveText('Exercises');
-    await expect(page.locator('.exercise-list .card')).toHaveCount(13);
+    await expect(page.locator('.exercise-list .card')).toHaveCount(18);
 
     await page.locator('.app-nav__item[href="#/workout"]').click();
     await expect(page.locator('.screen__title')).toHaveText('Workout');
