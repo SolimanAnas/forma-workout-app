@@ -63,13 +63,28 @@ describe('screen render smoke tests (jsdom)', () => {
     expect(o.querySelector('a.gym-card')?.getAttribute('href')).toBe(`#/gym/${GYM_SPLITS[0].id}`);
   });
 
-  it('Gym split detail renders day tabs and exercise cards with variations', () => {
+  it('Gym split detail renders day tabs, category groups, and slots', () => {
     const o = outlet();
     renderGym(o, 'ppl');
     expect(o.querySelectorAll('.day-tab')).toHaveLength(3); // Push / Pull / Legs
-    expect(o.querySelectorAll('.gym-ex').length).toBeGreaterThan(0);
-    expect(o.querySelector('.gym-ex__sets')).not.toBeNull();
-    expect(o.querySelector('.chip')).not.toBeNull(); // variations
+    expect([...o.querySelectorAll('.gym-cat')].map((n) => n.textContent)).toContain('Chest');
+    expect(o.querySelectorAll('.slot').length).toBeGreaterThan(0);
+    expect(o.querySelector('.slot__change')).not.toBeNull();
+    expect([...o.querySelectorAll('button')].some((b) => b.textContent?.includes('Start workout'))).toBe(true);
+  });
+
+  it('Gym slot: Change reveals region-aware options and picking one updates the slot', () => {
+    const o = outlet();
+    renderGym(o, 'ppl');
+    const firstSlot = o.querySelector('.slot') as HTMLElement;
+    (firstSlot.querySelector('.slot__change') as HTMLButtonElement).click();
+    const options = firstSlot.querySelectorAll('.opt');
+    expect(options.length).toBeGreaterThan(1);
+    // Pick the last option → its name becomes the slot's selected exercise.
+    const last = options[options.length - 1] as HTMLButtonElement;
+    const name = last.querySelector('.opt__name')?.textContent ?? '';
+    last.click();
+    expect(o.querySelector('.slot__exercise')?.textContent).toBe(name);
   });
 
   it('Profile renders settings controls (async)', async () => {

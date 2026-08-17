@@ -4,34 +4,41 @@ import { GYM_SPLITS, getGymSplit } from '../../src/domain/gym/splits';
 describe('gym splits', () => {
   it('includes the core splits', () => {
     const ids = GYM_SPLITS.map((s) => s.id);
-    expect(ids).toContain('ppl');
-    expect(ids).toContain('upper-lower');
-    expect(ids).toContain('full-body');
+    expect(ids).toEqual(expect.arrayContaining(['ppl', 'upper-lower', 'full-body']));
   });
 
-  it('has unique split and day ids', () => {
+  it('has unique split and slot ids', () => {
     const splitIds = GYM_SPLITS.map((s) => s.id);
     expect(new Set(splitIds).size).toBe(splitIds.length);
     for (const split of GYM_SPLITS) {
-      const dayIds = split.days.map((d) => d.id);
-      expect(new Set(dayIds).size, `days unique in ${split.id}`).toBe(dayIds.length);
+      const slotIds = split.days.flatMap((d) => d.slots.map((s) => s.id));
+      expect(new Set(slotIds).size, `slot ids unique in ${split.id}`).toBe(slotIds.length);
     }
   });
 
-  it('every exercise has muscles, a set scheme, and variations', () => {
+  it('every slot has a category, target, set scheme, and options with regions', () => {
     for (const split of GYM_SPLITS) {
-      expect(split.days.length).toBeGreaterThan(0);
       for (const day of split.days) {
-        expect(day.exercises.length).toBeGreaterThan(0);
-        for (const ex of day.exercises) {
-          expect(ex.name).toBeTruthy();
-          expect(ex.primaryMuscles.length).toBeGreaterThan(0);
-          expect(ex.sets).toBeTruthy();
-          expect(ex.reps).toBeTruthy();
-          expect(ex.variations.length).toBeGreaterThan(0);
+        expect(day.slots.length).toBeGreaterThan(0);
+        for (const s of day.slots) {
+          expect(s.category).toBeTruthy();
+          expect(s.target).toBeTruthy();
+          expect(s.sets).toBeTruthy();
+          expect(s.reps).toBeTruthy();
+          expect(s.options.length).toBeGreaterThan(0);
+          for (const o of s.options) {
+            expect(o.name).toBeTruthy();
+            expect(o.region).toBeTruthy();
+          }
         }
       }
     }
+  });
+
+  it('Push day groups slots by Chest / Shoulders / Triceps', () => {
+    const push = getGymSplit('ppl')?.days.find((d) => d.id === 'push');
+    const categories = [...new Set(push?.slots.map((s) => s.category))];
+    expect(categories).toEqual(['Chest', 'Shoulders', 'Triceps']);
   });
 
   it('looks up a split by id', () => {

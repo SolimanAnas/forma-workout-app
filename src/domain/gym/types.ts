@@ -1,32 +1,37 @@
-/** Gym training-split reference data (weighted gym work). PURE domain — no sensors involved. */
+/** Gym slot-based program data. PURE domain — no sensors. */
 
-export interface GymExercise {
+/** One selectable exercise for a slot, tagged with the muscle sub-region it emphasizes. */
+export interface SlotOption {
   name: string;
-  /** Primary muscles worked, e.g. ['Chest', 'Triceps']. */
-  primaryMuscles: string[];
-  /** Recommended set count, e.g. '3–4'. */
+  /** Sub-region, e.g. 'Upper Chest', 'Long Head', 'Lats' — drives smart (non-duplicate) suggestions. */
+  region: string;
+}
+
+/** A slot the user fills with one exercise (e.g. "Main Chest Press"). */
+export interface GymSlot {
+  id: string;
+  /** Muscle group heading the slot lives under, e.g. 'Chest'. */
+  category: string;
+  /** The slot's role, e.g. 'Main Press', 'Side Delts'. */
+  target: string;
   sets: string;
-  /** Recommended rep range, e.g. '8–12'. */
   reps: string;
-  /** Common variations, e.g. ['Barbell', 'Dumbbell', 'Incline', 'Machine']. */
-  variations: string[];
+  /** Suggested exercises to choose from. */
+  options: SlotOption[];
 }
 
 export interface GymDay {
   id: string;
   name: string;
-  /** Short focus line, e.g. 'Chest · Shoulders · Triceps'. */
   focus: string;
-  exercises: GymExercise[];
+  slots: GymSlot[];
 }
 
 export interface GymSplit {
   id: string;
-  /** Abbreviation, e.g. 'PPL'. */
   short: string;
   name: string;
   description: string;
-  /** Cadence / difficulty hint, e.g. 'Intermediate · 3–6 days/week'. */
   level: string;
   days: GymDay[];
 }
