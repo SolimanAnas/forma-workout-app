@@ -9,7 +9,23 @@ export default defineConfig({
       registerType: 'prompt',
       // Take control of the page as soon as the SW activates so the app is offline-capable
       // on the next navigation (offline-first, spec §31). Updates still require a user prompt.
-      workbox: { clientsClaim: true, skipWaiting: false },
+      workbox: {
+        clientsClaim: true,
+        skipWaiting: false,
+        // Detail-page posters are large and only viewed on demand — keep them out of the install
+        // precache and cache them at runtime (offline after first view) to keep first load light.
+        globIgnores: ['**/exercises/*-poster.webp'],
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/exercises/') && url.pathname.endsWith('-poster.webp'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'exercise-posters',
+              expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 * 60 },
+            },
+          },
+        ],
+      },
       // App shell precache; user data (IndexedDB) is intentionally NOT cached here.
       manifest: {
         name: 'Forma',

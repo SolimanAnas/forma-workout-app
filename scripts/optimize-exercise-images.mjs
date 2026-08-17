@@ -1,22 +1,25 @@
-// Converts the large source mascot PNGs in img/exercises/ into small square WebP files in
-// public/exercises/, named by exercise id. Prefers the clean `<name>-icon.png` variant when it
-// exists, otherwise falls back to `<name>.png`. Run: node scripts/optimize-exercise-images.mjs
+// Builds two WebP sets in public/exercises/ from the source PNGs in img/exercises/:
+//   <id>.webp        — small square icon (buttons/list). Prefers <base>-icon.png, else <base>.png.
+//   <id>-poster.webp — large detailed poster (exercise detail page). Prefers <base>-detailed.png,
+//                      else <base>.png, else <base>-icon.png.
+// Run: node scripts/optimize-exercise-images.mjs   (or: npm run images)
 import sharp from 'sharp';
 import { mkdirSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const SRC = 'img/exercises';
 const OUT = 'public/exercises';
-const SIZE = 400;
+const ICON_SIZE = 400;
+const POSTER_MAX = 720;
 
-// exercise id → source basename (without extension). The `-icon` variant is preferred if present.
-const SOURCES = {
+// exercise id → source basename (without suffix/extension).
+const BASES = {
   pushup: 'push-up',
   squat: 'squat',
   situp: 'sit-ups',
+  crunch: 'crunches',
   'jumping-jack': 'jumping-jacks',
   plank: 'Plank',
-  crunch: 'crunches',
   'leg-raises': 'leg-raises',
   'leg-flutters': 'leg-flutters',
   'russian-twist': 'russian-twist',
@@ -26,31 +29,51 @@ const SOURCES = {
   'pull-up': 'pull-up',
 };
 
-// Case-insensitive lookup of an existing source file.
+// Icon source override: crunch uses the sit-up icon (no dedicated crunch icon).
+const ICON_BASE_OVERRIDE = { crunch: 'sit-ups' };
+
 const files = readdirSync(SRC);
-function findSource(base) {
-  for (const candidate of [`${base}-icon.png`, `${base}.png`]) {
-    const hit = files.find((f) => f.toLowerCase() === candidate.toLowerCase());
+const findFile = (name) => files.find((f) => f.toLowerCase() === name.toLowerCase());
+const findFirst = (candidates) => {
+  for (const c of candidates) {
+    const hit = findFile(c);
     if (hit) return hit;
   }
   return null;
-}
+};
 
 mkdirSync(OUT, { recursive: true });
 let total = 0;
-for (const [id, base] of Object.entries(SOURCES)) {
-  const src = findSource(base);
-  if (!src) {
-    console.warn('  ! no source for', id);
-    continue;
-  }
-  const out = join(OUT, `${id}.webp`);
-  await sharp(join(SRC, src))
-    .resize(SIZE, SIZE, { fit: 'cover', position: 'centre' })
-    .webp({ quality: 76, effort: 6 })
-    .toFile(out);
-  const kb = statSync(out).size / 1024;
+const log = (src, out) => {
+  const kb = statSync(join(OUT, out)).size / 1024;
   total += kb;
-  console.log(`  ${src.padEnd(28)} → ${id}.webp  ${kb.toFixed(1)} KB`);
+  console.log(`  ${src.padEnd(28)} → ${out.padEnd(24)} ${kb.toFixed(1)} KB`);
+};
+
+for (const [id, base] of Object.entries(BASES)) {
+  // ── Icon (square, cropped) ──
+  const iconBase = ICON_BASE_OVERRIDE[id] ?? base;
+  const iconSrc = findFirst([`${iconBase}-icon.png`, `${iconBase}.png`]);
+  if (iconSrc) {
+    await sharp(join(SRC, iconSrc))
+      .resize(ICON_SIZE, ICON_SIZE, { fit: 'cover', position: 'centre' })
+      .webp({ quality: 78, effort: 6 })
+      .toFile(join(OUT, `${id}.webp`));
+    log(iconSrc, `${id}.webp`);
+  } else {
+    console.warn('  ! no icon source for', id);
+  }
+
+  // ── Poster (detailed, aspect preserved) ──
+  const posterSrc = findFirst([`${base}-detailed.png`, `${base}.png`, `${base}-icon.png`]);
+  if (posterSrc) {
+    await sharp(join(SRC, posterSrc))
+      .resize(POSTER_MAX, POSTER_MAX, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 74, effort: 6 })
+      .toFile(join(OUT, `${id}-poster.webp`));
+    log(posterSrc, `${id}-poster.webp`);
+  } else {
+    console.warn('  ! no poster source for', id);
+  }
 }
-console.log(`\nTotal: ${(total / 1024).toFixed(2)} MB across ${Object.keys(SOURCES).length} images`);
+console.log(`\nTotal: ${(total / 1024).toFixed(2)} MB`);

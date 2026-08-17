@@ -218,8 +218,22 @@
 }
 .exercise-card {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-3);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.08s ease, border-color 0.18s ease;
+}
+.exercise-card:hover { border-color: var(--color-border-strong); }
+.exercise-card:active { transform: scale(0.99); }
+.exercise-card:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+.exercise-card__body { flex: 1; min-width: 0; }
+.exercise-card__chevron {
+  flex: none;
+  font-size: 1.8rem;
+  color: var(--color-faint);
+  line-height: 1;
 }
 .exercise-card__icon {
   font-size: 1.8rem;
@@ -307,7 +321,7 @@
 /* ── Selectable exercise button grid ──────────────────── */
 .pick-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
   gap: var(--space-2);
 }
 .pick-btn {
@@ -318,7 +332,7 @@
   justify-content: center;
   gap: 8px;
   padding: var(--space-3);
-  min-height: 118px;
+  min-height: 156px;
   text-align: center;
   text-decoration: none;
   background: var(--color-surface);
@@ -335,8 +349,8 @@
   line-height: 1;
 }
 .pick-btn__img {
-  width: 60px;
-  height: 60px;
+  width: 90px;
+  height: 90px;
   border-radius: var(--radius-sm);
   object-fit: cover;
   display: block;
@@ -699,27 +713,25 @@ input.toggle:focus-visible { outline: 3px solid var(--color-accent); outline-off
   margin-bottom: var(--space-3);
 }
 .back-link:hover { color: var(--color-text); }
-.ex-hero {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
+.ex-detail__head {
   margin-bottom: var(--space-4);
 }
-.ex-hero__img,
-.ex-hero__fallback {
-  width: 128px;
-  height: 128px;
-  flex: none;
-  border-radius: var(--radius);
-  object-fit: cover;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md);
+.ex-poster-wrap {
+  margin: 0 0 var(--space-4);
 }
-.ex-hero__fallback {
+.ex-poster {
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-surface-2);
+}
+.ex-poster--fallback {
+  aspect-ratio: 1 / 1;
   display: grid;
   place-items: center;
-  font-size: 3.5rem;
+  font-size: 5rem;
 }
 .ex-hero__name {
   font-size: clamp(1.5rem, 6vw, 2rem);

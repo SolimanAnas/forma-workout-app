@@ -6,7 +6,7 @@ import type { WorkoutMode } from '../../domain/workout/types';
 import { setPendingLaunch } from '../../app/workout-context';
 import type { WorkoutLaunch } from '../../services/workout-factory';
 import { motionSupported, requestMotionPermission } from '../../sensors/permissions';
-import { exerciseEmoji, exerciseImage } from '../exercise-image';
+import { exerciseEmoji, exerciseImage, exercisePoster } from '../exercise-image';
 import { el } from '../dom';
 
 const MOTION_SENSORS = new Set(['accelerometer', 'gyroscope', 'orientation']);
@@ -25,25 +25,13 @@ export function renderExercise(outlet: HTMLElement, id?: string): void {
     return;
   }
 
-  const view = el('section', { class: 'screen', 'aria-label': exercise.name });
+  const view = el('section', { class: 'screen ex-detail', 'aria-label': exercise.name });
 
-  // Back link + hero.
   view.append(el('a', { class: 'back-link', href: '#/workout' }, ['← All exercises']));
 
-  const hero = el('div', { class: 'ex-hero' });
-  const img = el('img', {
-    class: 'ex-hero__img',
-    src: exerciseImage(exercise.id),
-    alt: exercise.name,
-    width: '160',
-    height: '160',
-  }) as HTMLImageElement;
-  img.addEventListener('error', () => {
-    img.replaceWith(el('div', { class: 'ex-hero__fallback', 'aria-hidden': 'true' }, [exerciseEmoji(exercise.id)]));
-  });
-  hero.append(
-    img,
-    el('div', {}, [
+  // Header.
+  view.append(
+    el('div', { class: 'ex-detail__head' }, [
       el('h1', { class: 'ex-hero__name' }, [exercise.name]),
       el('div', { class: 'ex-hero__tags' }, [
         el('span', { class: 'tag' }, [exercise.category]),
@@ -52,7 +40,28 @@ export function renderExercise(outlet: HTMLElement, id?: string): void {
       ]),
     ]),
   );
-  view.append(hero);
+
+  // Detailed poster — the visual "how to". Falls back to the icon, then an emoji tile.
+  const poster = el('img', {
+    class: 'ex-poster',
+    src: exercisePoster(exercise.id),
+    alt: `How to do ${exercise.name}`,
+    loading: 'eager',
+  }) as HTMLImageElement;
+  let posterFellBack = false;
+  poster.addEventListener('error', () => {
+    if (!posterFellBack) {
+      posterFellBack = true;
+      poster.src = exerciseImage(exercise.id);
+    } else {
+      poster.replaceWith(
+        el('div', { class: 'ex-poster ex-poster--fallback', 'aria-hidden': 'true' }, [
+          exerciseEmoji(exercise.id),
+        ]),
+      );
+    }
+  });
+  view.append(el('figure', { class: 'ex-poster-wrap' }, [poster]));
 
   // Phone placement (so the sensor can actually see the movement).
   const placement = getPlacement(exercise.placement);
