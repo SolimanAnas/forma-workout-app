@@ -45,3 +45,9 @@ coverage/
 
 # Local scripts
 start.bat
+
+# Temp screenshot / scratch artifacts
+shot-*.png
+*-check.png
+shot.mjs
+camtest.mjs
