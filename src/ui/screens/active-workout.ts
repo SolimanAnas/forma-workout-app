@@ -21,6 +21,19 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
   }
 
   setState({ activeWorkout: true });
+
+  // Lock zoom on the counter page ONLY (restored on leave). Prevents the phone from accidentally
+  // zooming while you tap to count reps. Global pinch-zoom stays enabled everywhere else (spec §20).
+  const viewportMeta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
+  const prevViewport = viewportMeta?.getAttribute('content') ?? null;
+  viewportMeta?.setAttribute(
+    'content',
+    'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+  );
+  const restoreZoom = (): void => {
+    if (viewportMeta && prevViewport !== null) viewportMeta.setAttribute('content', prevViewport);
+  };
+
   const settings = await getAllSettings();
   const coach = new VoiceCoach(settings.voiceCoach);
 
@@ -177,6 +190,7 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
     if (!outlet.contains(view) && !outlet.querySelector('.workout')) {
       session.stop();
       setState({ activeWorkout: false });
+      restoreZoom();
       window.removeEventListener('hashchange', onLeave);
     }
   };

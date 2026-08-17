@@ -15,7 +15,7 @@ export interface AppSettings {
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  theme: 'system',
+  theme: 'dark',
   voiceCoach: true,
   units: 'metric',
   devMode: false,

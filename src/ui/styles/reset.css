@@ -37,6 +37,11 @@ select {
   color: inherit;
 }
 
+/* The HTML hidden attribute must always win, even over display-setting classes (e.g. .btn). */
+[hidden] {
+  display: none !important;
+}
+
 h1,
 h2,
 h3,

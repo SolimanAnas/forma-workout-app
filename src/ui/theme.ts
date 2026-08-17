@@ -12,3 +12,10 @@ export function applyTheme(pref: ThemePref): void {
     root.dataset.theme = pref;
   }
 }
+
+/** The theme currently in effect (resolving `system` against the OS preference). */
+export function effectiveTheme(): 'light' | 'dark' {
+  const attr = document.documentElement.dataset.theme;
+  if (attr === 'dark' || attr === 'light') return attr;
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}

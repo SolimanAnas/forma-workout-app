@@ -1,6 +1,8 @@
 import { el } from '../ui/dom';
 import { subscribe, getState } from './state';
 import { ROUTE_CHANGED } from './router';
+import { applyTheme, effectiveTheme } from '../ui/theme';
+import { setSetting } from '../data/settings';
 
 interface NavItem {
   path: string;
@@ -13,7 +15,7 @@ const NAV_ITEMS: NavItem[] = [
   { path: 'workout', label: 'Workout', icon: '💪' },
   { path: 'exercises', label: 'Exercises', icon: '📋' },
   { path: 'progress', label: 'Progress', icon: '📈' },
-  { path: 'profile', label: 'Profile', icon: '⚙️' },
+  { path: 'settings', label: 'Settings', icon: '⚙️' },
 ];
 
 /** Builds the app shell (header + outlet + bottom nav) and returns the router outlet. */
@@ -31,8 +33,24 @@ export function mountShell(root: HTMLElement): HTMLElement {
   });
   nav.append(...links);
 
+  // Quick theme toggle (dark ⇄ light), persisted.
+  const themeBtn = el('button', { class: 'app-header__theme', type: 'button' });
+  const syncThemeBtn = (): void => {
+    const dark = effectiveTheme() === 'dark';
+    themeBtn.textContent = dark ? '☀️' : '🌙';
+    themeBtn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+  };
+  themeBtn.addEventListener('click', () => {
+    const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    void setSetting('theme', next);
+    syncThemeBtn();
+  });
+  syncThemeBtn();
+
   const header = el('header', { class: 'app-header' }, [
     el('span', { class: 'app-header__brand' }, ['FORMA']),
+    themeBtn,
   ]);
 
   const shell = el('div', { class: 'app-shell' }, [header, outlet, nav]);

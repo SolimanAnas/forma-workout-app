@@ -34,7 +34,7 @@ async function bootstrap(): Promise<void> {
     .add({ path: 'exercise', title: 'Exercise', render: renderExercise })
     .add({ path: 'exercises', title: 'Exercises', render: renderExercises })
     .add({ path: 'progress', title: 'Progress', render: renderProgress })
-    .add({ path: 'profile', title: 'Profile', render: renderProfile })
+    .add({ path: 'settings', title: 'Settings', render: renderProfile })
     .add({ path: 'active-workout', title: 'Active workout', render: renderActiveWorkout })
     .add({ path: 'sensor-diag', title: 'Sensor diagnostics', render: renderSensorDiag });
 

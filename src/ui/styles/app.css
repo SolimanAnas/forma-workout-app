@@ -54,6 +54,30 @@
   box-shadow: var(--glow-accent);
   vertical-align: middle;
 }
+.app-header__theme {
+  appearance: none;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-pill);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.08s ease, border-color 0.18s ease;
+}
+.app-header__theme:hover {
+  border-color: var(--color-border-strong);
+}
+.app-header__theme:active {
+  transform: scale(0.92);
+}
+.app-header__theme:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
 
 /* ── Main / screens ───────────────────────────────────── */
 .app-main {
@@ -653,6 +677,8 @@ input.toggle:focus-visible { outline: 3px solid var(--color-accent); outline-off
   display: flex;
   flex-direction: column;
   min-height: calc(100dvh - var(--header-height) - var(--space-6));
+  /* Rapid tapping to count reps must not trigger double-tap zoom. */
+  touch-action: manipulation;
 }
 .workout__stage {
   flex: 1;
@@ -775,6 +801,87 @@ input.toggle:focus-visible { outline: 3px solid var(--color-accent); outline-off
   line-height: 1.5;
   border-left: 3px solid var(--color-warning);
   padding-left: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+/* ── About card ───────────────────────────────────────── */
+.about__app {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+.about__logo {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--grad-accent);
+  color: var(--color-on-accent);
+  font-weight: 900;
+  font-size: 1.5rem;
+  box-shadow: var(--glow-accent);
+}
+.about__app-name {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+}
+.about__dev {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+}
+.about__avatar {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-accent-text);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+.about__dev-body {
+  min-width: 0;
+}
+.about__dev-name {
+  font-weight: 700;
+}
+.about__dev-role {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  margin-top: 2px;
+}
+.about__dev-links {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
+}
+.about__link {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent-text);
+  text-decoration: none;
+  padding: 4px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+}
+.about__link:hover {
+  border-color: var(--color-accent);
+}
+.about__credit {
+  color: var(--color-faint);
+  font-size: 0.78rem;
+  text-align: center;
   margin-top: var(--space-4);
 }
 
