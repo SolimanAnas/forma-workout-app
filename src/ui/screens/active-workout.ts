@@ -29,11 +29,14 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
   const exerciseName = getExerciseById(launch.exerciseId)?.name ?? launch.exerciseId;
 
   const view = el('section', { class: 'workout', 'aria-label': 'Active workout' });
+  // Upper region: the rep count dominates and stays vertically centered.
+  const stage = el('div', { class: 'workout__stage' });
   const title = el('div', { class: 'workout__exercise' }, [exerciseName]);
   const big = el('div', { class: 'rep-count', 'aria-live': 'polite' }, ['0']);
   const label = el('div', { class: 'rep-count__label' }, ['reps']);
   const detail = el('div', { class: 'workout__detail' }, ['']);
-  view.append(title, big, label, detail);
+  stage.append(title, big, label, detail);
+  view.append(stage);
 
   // Tap-to-count: the rep number is a tap target (works alongside sensor counting).
   if (settings.tapToCount) {
@@ -49,10 +52,10 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
         tap();
       }
     });
-    view.append(el('div', { class: 'workout__hint' }, ['Tap the number to count a rep']));
+    stage.append(el('div', { class: 'workout__hint' }, ['Tap the number to count a rep']));
   }
 
-  // Controls.
+  // Lower third: session controls.
   const controls = el('div', { class: 'workout__controls' });
   const skip = el('button', { class: 'btn', type: 'button' }, ['Skip rest']);
   const add30 = el('button', { class: 'btn', type: 'button' }, ['+30s']);
@@ -80,7 +83,7 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
     manualAdded = true;
     const simulate = el('button', { class: 'btn btn--primary', type: 'button' }, ['＋ Rep']);
     simulate.addEventListener('click', () => session.simulateRep());
-    view.append(simulate);
+    stage.append(simulate);
     detail.textContent = note;
   };
 

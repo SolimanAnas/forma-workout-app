@@ -1,12 +1,18 @@
 import { getSensorManager } from '../../sensors/SensorManager';
 import type { SensorCapabilities, SensorKind, SensorSample } from '../../sensors/types';
 import { queryMotionPermission, requestMotionPermission } from '../../sensors/permissions';
+import { SensorRecorder } from '../../sensors/replay/recorder';
+import type { SensorRecording } from '../../sensors/replay/recording';
+import { saveRecording } from '../../data/recordings';
+import { EXERCISE_DEFINITIONS } from '../../domain/exercise/definitions';
+import { getDetectionProfile } from '../../domain/exercise/detection-profiles';
+import { analyzeReps } from '../../services/detection';
 import { capabilityBadge, permissionBadge } from '../components/status-badge';
 import { el, screen } from '../dom';
 
 const LIVE_KINDS: SensorKind[] = ['accelerometer', 'gyroscope', 'orientation'];
 
-/** Developer diagnostics: honest capabilities, permission flow, and live sensor values (spec §11). */
+/** Developer diagnostics: honest capabilities, permission flow, live values, and the tuning recorder. */
 export function renderSensorDiag(outlet: HTMLElement): void {
   const manager = getSensorManager();
   const view = screen('Sensor diagnostics', 'Developer tools.');
@@ -20,10 +26,118 @@ export function renderSensorDiag(outlet: HTMLElement): void {
   );
 
   view.append(permissionSection());
+  view.append(recorderSection(outlet));
   view.append(capabilitySection(manager.listCapabilities()));
   view.append(liveSection(outlet));
 
   outlet.append(view);
+}
+
+/** Record a real sensor session, see how the current profile scores it, and export it for tuning. */
+function recorderSection(outlet: HTMLElement): HTMLElement {
+  const manager = getSensorManager();
+  const card = el('div', { class: 'card' }, [
+    el('div', { class: 'exercise-item__name' }, ['Sensor recorder (tuning)']),
+    el('p', { class: 'exercise-item__meta' }, [
+      'Record a set of a known rep count, then export the JSON to tune detection thresholds.',
+    ]),
+  ]);
+
+  const exercise = el('select', { 'aria-label': 'Exercise to record' }) as HTMLSelectElement;
+  for (const ex of EXERCISE_DEFINITIONS) {
+    exercise.append(el('option', { value: ex.id }, [ex.name]));
+  }
+  card.append(row('Exercise', exercise));
+
+  const status = el('div', { class: 'exercise-item__meta' }, ['Ready.']);
+  const toggle = el('button', { class: 'btn btn--primary', type: 'button' }, ['● Record']);
+  const result = el('div', {});
+  card.append(status, toggle, result);
+
+  let recorder: SensorRecorder | null = null;
+  let ticker = 0;
+
+  const stopTicker = (): void => {
+    if (ticker) window.clearInterval(ticker);
+    ticker = 0;
+  };
+
+  const startRecording = async (): Promise<void> => {
+    await requestMotionPermission(); // gesture-triggered (iOS)
+    recorder = new SensorRecorder(manager, LIVE_KINDS, exercise.value);
+    try {
+      await recorder.start();
+    } catch {
+      status.textContent = 'Could not start sensors — check permission/secure context.';
+      recorder = null;
+      return;
+    }
+    toggle.textContent = '■ Stop';
+    result.replaceChildren();
+    const started = Date.now();
+    ticker = window.setInterval(() => {
+      const secs = ((Date.now() - started) / 1000).toFixed(1);
+      status.textContent = `Recording… ${secs}s · ${recorder?.sampleCount ?? 0} samples`;
+    }, 200);
+  };
+
+  const stopRecording = async (): Promise<void> => {
+    stopTicker();
+    if (!recorder) return;
+    const recording = recorder.stop();
+    recorder = null;
+    toggle.textContent = '● Record';
+    status.textContent = `Captured ${recording.sampleCount} samples over ${(recording.durationMs / 1000).toFixed(1)}s.`;
+    await saveRecording(recording).catch(() => {});
+    showResult(recording, result);
+  };
+
+  toggle.addEventListener('click', () => {
+    if (recorder) void stopRecording();
+    else void startRecording();
+  });
+
+  // Release sensors if the user navigates away mid-recording.
+  const onLeave = (): void => {
+    if (!outlet.contains(card)) {
+      stopTicker();
+      recorder?.stop();
+      recorder = null;
+      window.removeEventListener('hashchange', onLeave);
+    }
+  };
+  window.addEventListener('hashchange', onLeave);
+
+  return card;
+}
+
+function showResult(recording: SensorRecording, container: HTMLElement): void {
+  const profile = recording.exerciseId ? getDetectionProfile(recording.exerciseId) : undefined;
+  const detected = profile ? analyzeReps(profile, recording.samples).validCount : null;
+
+  const exportBtn = el('button', { class: 'btn', type: 'button' }, ['⬇ Export JSON']);
+  exportBtn.addEventListener('click', () => downloadRecording(recording));
+
+  container.replaceChildren(
+    el('div', { class: 'sensor-row' }, [
+      el('span', {}, ['Current profile detects']),
+      el('strong', {}, [detected === null ? 'n/a' : `${detected} reps`]),
+    ]),
+    exportBtn,
+  );
+}
+
+function downloadRecording(recording: SensorRecording): void {
+  const blob = new Blob([JSON.stringify(recording)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = el('a', {
+    href: url,
+    download: `${recording.exerciseId ?? 'recording'}-${recording.id}.json`,
+  });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 function permissionSection(): HTMLElement {

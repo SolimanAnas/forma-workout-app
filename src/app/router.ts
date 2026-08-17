@@ -3,7 +3,8 @@
 export interface Route {
   path: string;
   title: string;
-  render: (outlet: HTMLElement) => void | Promise<void>;
+  /** `param` is the remainder of the hash after the route's first segment (e.g. `exercise/pushup`). */
+  render: (outlet: HTMLElement, param?: string) => void | Promise<void>;
 }
 
 export const ROUTE_CHANGED = 'route:changed';
@@ -41,10 +42,20 @@ export class Router {
 
   private async resolve(): Promise<void> {
     const path = this.currentPath();
-    const route = this.routes.get(path) ?? this.routes.get(this.fallback);
+    let route = this.routes.get(path);
+    let param: string | undefined;
+    if (!route) {
+      // Try matching by first segment, passing the rest as a param (e.g. `exercise/pushup`).
+      const slash = path.indexOf('/');
+      if (slash > 0) {
+        route = this.routes.get(path.slice(0, slash));
+        param = path.slice(slash + 1) || undefined;
+      }
+    }
+    route = route ?? this.routes.get(this.fallback);
     if (!route) return;
     this.outlet.replaceChildren();
-    await route.render(this.outlet);
+    await route.render(this.outlet, param);
     document.title = `Forma — ${route.title}`;
     window.dispatchEvent(new CustomEvent(ROUTE_CHANGED, { detail: { path: route.path } }));
   }

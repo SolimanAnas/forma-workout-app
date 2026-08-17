@@ -12,4 +12,5 @@ export const EXERCISE_ICONS: Record<string, string> = {
   'mountain-climbers': '⛰️',
   burpee: '🔥',
   'pull-up': '🏋️',
+  'leg-flutters': '🦵',
 };

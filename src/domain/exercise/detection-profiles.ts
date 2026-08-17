@@ -130,6 +130,17 @@ export const DETECTION_PROFILES: Record<string, DetectionProfile> = {
     targetDurationMs: 1200,
     rep: repThresholds(3.5),
   },
+  'leg-flutters': {
+    id: 'leg-flutters',
+    type: 'cyclic',
+    sensor: 'accelerometer',
+    axis: 'z',
+    baseline: 9.81,
+    direction: 1,
+    expectedAmplitude: 2.5,
+    targetDurationMs: 500,
+    rep: repThresholds(2.5),
+  },
   'high-knees': {
     id: 'high-knees',
     type: 'cyclic',

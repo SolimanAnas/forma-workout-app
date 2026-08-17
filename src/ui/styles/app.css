@@ -464,17 +464,23 @@ input.toggle:focus-visible { outline: 3px solid var(--color-accent); outline-off
 .field strong,
 .stat-value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
-/* ── Active workout ───────────────────────────────────── */
+/* ── Active workout (counter) ─────────────────────────── */
 .workout {
   display: flex;
   flex-direction: column;
+  min-height: calc(100dvh - var(--header-height) - var(--space-6));
+}
+.workout__stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
   gap: var(--space-2);
-  padding-top: var(--space-6);
 }
 .workout__exercise {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
@@ -482,29 +488,89 @@ input.toggle:focus-visible { outline: 3px solid var(--color-accent); outline-off
 }
 .rep-count {
   font-family: var(--font-mono);
-  font-size: clamp(5.5rem, 34vw, 11rem);
+  font-size: clamp(7rem, 46vw, 15rem);
   font-weight: 800;
-  line-height: 0.95;
+  line-height: 0.9;
   font-variant-numeric: tabular-nums;
   color: var(--color-text);
-  text-shadow: 0 0 44px color-mix(in srgb, var(--color-accent) 30%, transparent);
+  text-shadow: 0 0 60px color-mix(in srgb, var(--color-accent) 34%, transparent);
 }
 .workout[data-phase='RESTING'] .rep-count { color: var(--color-accent-text); }
 .rep-count__label {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: var(--tracking-label);
   font-weight: 700;
 }
-.workout__detail { font-size: 0.95rem; color: var(--color-muted); min-height: 1.5em; }
+.workout__detail { font-size: 1rem; color: var(--color-muted); min-height: 1.5em; }
 .workout__hint { color: var(--color-faint); font-size: 0.82rem; }
+/* Controls sit in the lower third of the screen. */
 .workout__controls {
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: var(--space-5);
+  margin-top: auto;
+  padding: var(--space-4) 0 var(--space-5);
+}
+.workout__controls .btn {
+  flex: 1;
+  min-width: 96px;
+}
+
+/* ── Exercise detail page ─────────────────────────────── */
+.back-link {
+  display: inline-block;
+  color: var(--color-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+.back-link:hover { color: var(--color-text); }
+.ex-hero {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.ex-hero__img,
+.ex-hero__fallback {
+  width: 128px;
+  height: 128px;
+  flex: none;
+  border-radius: var(--radius);
+  object-fit: cover;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+.ex-hero__fallback {
+  display: grid;
+  place-items: center;
+  font-size: 3.5rem;
+}
+.ex-hero__name {
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.ex-hero__tags { margin-top: var(--space-1); }
+.howto {
+  margin: 0;
+  padding-left: 1.3em;
+  display: grid;
+  gap: var(--space-2);
+}
+.howto li {
+  color: var(--color-text);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.howto li::marker {
+  color: var(--color-accent-text);
+  font-weight: 700;
 }
 .rep-count.tappable {
   cursor: pointer;

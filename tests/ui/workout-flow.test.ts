@@ -3,6 +3,7 @@ import { deleteDB } from 'idb';
 import { DB_NAME } from '../../src/data/schema';
 import { _resetDbForTests } from '../../src/data/db';
 import { renderWorkout } from '../../src/ui/screens/workout';
+import { renderExercise } from '../../src/ui/screens/exercise';
 import { renderActiveWorkout } from '../../src/ui/screens/active-workout';
 import { setPendingLaunch, takePendingLaunch } from '../../src/app/workout-context';
 import { setState } from '../../src/app/state';
@@ -22,22 +23,31 @@ beforeEach(async () => {
   setState({ activeWorkout: false });
 });
 
-describe('workout setup screen', () => {
-  it('renders an exercise button grid, a mode control, and a start button', () => {
+describe('workout picker', () => {
+  it('renders exercise buttons that link to their detail pages', () => {
     const o = outlet();
     renderWorkout(o);
-    expect(o.querySelectorAll('.pick-btn').length).toBeGreaterThanOrEqual(5);
+    const picks = [...o.querySelectorAll<HTMLAnchorElement>('a.pick-btn')];
+    expect(picks.length).toBeGreaterThanOrEqual(5);
+    expect(picks[0].getAttribute('href')).toMatch(/^#\/exercise\//);
+  });
+});
+
+describe('exercise detail page', () => {
+  it('renders hero, how-to, a mode control, and a start button', () => {
+    const o = outlet();
+    renderExercise(o, 'pushup');
+    expect(o.querySelector('.ex-hero__name')?.textContent).toBe('Push-up');
+    expect(o.querySelectorAll('.howto li').length).toBeGreaterThan(0);
     expect(o.querySelectorAll('.segmented__btn')).toHaveLength(3);
     expect(o.querySelector('button.btn--primary')?.textContent).toContain('Start');
   });
 
-  it('selecting an exercise button updates the pressed state', () => {
+  it('redirects to the picker for an unknown exercise', () => {
     const o = outlet();
-    renderWorkout(o);
-    const buttons = [...o.querySelectorAll<HTMLButtonElement>('.pick-btn')];
-    buttons[2].click();
-    expect(buttons[2].getAttribute('aria-pressed')).toBe('true');
-    expect(buttons.filter((b) => b.getAttribute('aria-pressed') === 'true')).toHaveLength(1);
+    window.location.hash = '#/exercise/nope';
+    renderExercise(o, 'nope');
+    expect(window.location.hash).toBe('#/workout');
   });
 
   it('requests motion permission from the Start user-gesture (iOS-style)', async () => {
@@ -47,12 +57,14 @@ describe('workout setup screen', () => {
     };
 
     const o = outlet();
-    renderWorkout(o);
+    renderExercise(o, 'pushup');
     o.querySelector<HTMLButtonElement>('button.btn--primary')?.click();
     await new Promise((r) => setTimeout(r, 20));
 
     expect(requestPermission).toHaveBeenCalledTimes(1);
-    expect(takePendingLaunch()?.motionPermission).toBe('granted');
+    const launch = takePendingLaunch();
+    expect(launch?.exerciseId).toBe('pushup');
+    expect(launch?.motionPermission).toBe('granted');
 
     delete (globalThis as Record<string, unknown>).DeviceMotionEvent;
   });

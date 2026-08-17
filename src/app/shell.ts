@@ -38,9 +38,11 @@ export function mountShell(root: HTMLElement): HTMLElement {
   const shell = el('div', { class: 'app-shell' }, [header, outlet, nav]);
   root.replaceChildren(shell);
 
-  // Highlight active nav item from the route-changed event detail.
+  // Highlight active nav item from the route-changed event detail. The exercise detail page
+  // belongs under the Workout tab.
   window.addEventListener(ROUTE_CHANGED, (event) => {
-    const current = (event as CustomEvent<{ path: string }>).detail.path;
+    const path = (event as CustomEvent<{ path: string }>).detail.path;
+    const current = path === 'exercise' ? 'workout' : path;
     for (const link of links) {
       if (link.dataset.path === current) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');

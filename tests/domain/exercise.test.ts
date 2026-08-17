@@ -5,14 +5,14 @@ import { getPlacement } from '../../src/domain/exercise/placement';
 
 describe('exercise definitions', () => {
   it('defines the full exercise library', () => {
-    expect(EXERCISE_DEFINITIONS).toHaveLength(12);
-    // Original 5 MVP + 7 added exercises.
+    expect(EXERCISE_DEFINITIONS).toHaveLength(13);
     expect(EXERCISE_DEFINITIONS.map((e) => e.id).sort()).toEqual(
       [
         'burpee',
         'crunch',
         'high-knees',
         'jumping-jack',
+        'leg-flutters',
         'leg-raises',
         'mountain-climbers',
         'plank',

@@ -29,14 +29,16 @@ describe('screen render smoke tests (jsdom)', () => {
     expect(o.querySelector('a.btn--primary')?.getAttribute('href')).toBe('#/workout');
   });
 
-  it('Workout renders exercise buttons + a mode control + start (no combo box)', () => {
+  it('Workout renders an exercise picker whose buttons link to detail pages (no combo box)', () => {
     const o = outlet();
     renderWorkout(o);
     expect(o.querySelectorAll('select')).toHaveLength(0); // exercises are buttons, not a dropdown
-    expect(o.querySelectorAll('.pick-btn')).toHaveLength(EXERCISE_DEFINITIONS.length);
-    expect(o.querySelector('.pick-btn[aria-pressed="true"]')).not.toBeNull();
-    expect(o.querySelectorAll('.segmented__btn')).toHaveLength(3);
-    expect(o.querySelector('button.btn--primary')?.textContent).toContain('Start');
+    const picks = o.querySelectorAll<HTMLAnchorElement>('a.pick-btn');
+    expect(picks).toHaveLength(EXERCISE_DEFINITIONS.length);
+    expect(picks[0].getAttribute('href')).toBe(`#/exercise/${EXERCISE_DEFINITIONS[0].id}`);
+    // Mode + Start moved to the detail page.
+    expect(o.querySelector('.segmented__btn')).toBeNull();
+    expect(o.querySelector('button.btn--primary')).toBeNull();
   });
 
   it('Exercises lists every MVP exercise from data', () => {
@@ -59,12 +61,15 @@ describe('screen render smoke tests (jsdom)', () => {
     expect(o.querySelector('.disclaimer')).not.toBeNull();
   });
 
-  it('Sensor diagnostics renders honest capability badges + detection mode', () => {
+  it('Sensor diagnostics renders capability badges, detection mode, and the tuning recorder', () => {
     const o = outlet();
     renderSensorDiag(o);
     expect(o.textContent).toContain('Detection mode');
     // Under jsdom (no motion APIs) every sensor is honestly Unsupported.
     expect(o.querySelectorAll('.badge').length).toBeGreaterThan(0);
     expect(o.textContent).toContain('Unsupported');
+    // Tuning recorder: exercise select + a Record button.
+    expect(o.querySelector('select[aria-label="Exercise to record"]')).not.toBeNull();
+    expect([...o.querySelectorAll('button')].some((b) => b.textContent?.includes('Record'))).toBe(true);
   });
 });

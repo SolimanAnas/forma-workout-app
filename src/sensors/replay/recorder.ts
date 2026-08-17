@@ -22,6 +22,11 @@ export class SensorRecorder {
     return this.recording;
   }
 
+  /** Samples captured so far (for live UI while recording). */
+  get sampleCount(): number {
+    return this.samples.length;
+  }
+
   async start(): Promise<void> {
     if (this.recording) return;
     this.samples = [];

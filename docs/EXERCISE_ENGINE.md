@@ -45,6 +45,27 @@ Validated against committed **synthetic** fixtures (`tests/fixtures/recordings/`
 counts its exact cycle count; plank counts zero. Real-device accuracy (spec §25 ≥95%) is validated in
 Phase 7 with recordings captured via the Sensor Recorder.
 
+## Tuning detection thresholds
+
+The added exercises ship with **untuned** starting thresholds. Tune them from real data instead of
+guessing:
+
+1. **Record** on your phone: Profile → enable *Developer mode* → **Sensor diagnostics** → *Sensor
+   recorder*. Pick the exercise, tap **Record**, do a known number of reps (e.g. 10), tap **Stop**.
+   It shows how many reps the *current* profile detects, and lets you **Export JSON**.
+2. **Auto-tune** with that recording:
+   ```bash
+   npm run tune -- path/to/recording.json --reps 10 --exercise pushup
+   ```
+   It grid-searches axis / direction / amplitude / timing using the **same detection engine the app
+   uses**, and prints a paste-ready `DetectionProfile`.
+3. **Paste** the suggested block into `src/domain/exercise/detection-profiles.ts`.
+4. **Lock it in**: drop the recording into `tests/fixtures/recordings/` and add a test asserting the
+   expected count, so it becomes a regression fixture (like the 5 originals).
+
+The recorder captures accelerometer + gyroscope + orientation, so you can retune against a different
+axis/sensor later without re-recording.
+
 ## How to add a new exercise
 
 1. Add a definition to `src/domain/exercise/definitions.ts` (id, muscles, sensors, `detectionProfile`,

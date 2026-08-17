@@ -10,10 +10,19 @@ test.describe('Forma PWA', () => {
 
     await page.locator('.app-nav__item[href="#/exercises"]').click();
     await expect(page.locator('.screen__title')).toHaveText('Exercises');
-    await expect(page.locator('.exercise-list .card')).toHaveCount(12);
+    await expect(page.locator('.exercise-list .card')).toHaveCount(13);
 
     await page.locator('.app-nav__item[href="#/workout"]').click();
-    await expect(page.locator('button.btn--primary')).toContainText('Start');
+    await expect(page.locator('.screen__title')).toHaveText('Workout');
+    await expect(page.locator('a.pick-btn').first()).toHaveAttribute('href', /#\/exercise\//);
+  });
+
+  test('opening an exercise shows its detail page with how-to and start', async ({ page }) => {
+    await page.goto('./#/workout', { waitUntil: 'domcontentloaded' });
+    await page.locator('a.pick-btn').first().click();
+    await expect(page.locator('.ex-hero__name')).toBeVisible();
+    await expect(page.locator('.howto li').first()).toBeVisible();
+    await expect(page.locator('button.btn--primary', { hasText: 'Start' })).toBeVisible();
   });
 
   test('registers a service worker and works offline after first load', async ({ page, context }) => {
@@ -35,7 +44,7 @@ test.describe('Forma PWA', () => {
   test('launches an active workout with a dominant rep count and hides the nav (no-touch)', async ({
     page,
   }) => {
-    await page.goto('./#/workout', { waitUntil: 'domcontentloaded' });
+    await page.goto('./#/exercise/pushup', { waitUntil: 'domcontentloaded' });
     await page.locator('.segmented__btn', { hasText: 'Free' }).click();
     await page.locator('.pwa-banner button').click({ timeout: 1500 }).catch(() => {});
     await page.locator('button.btn--primary', { hasText: 'Start' }).click();
@@ -47,7 +56,7 @@ test.describe('Forma PWA', () => {
   });
 
   test('tap-to-count increments reps and completes a workout', async ({ page }) => {
-    await page.goto('./#/workout', { waitUntil: 'domcontentloaded' });
+    await page.goto('./#/exercise/pushup', { waitUntil: 'domcontentloaded' });
     await page.locator('.segmented__btn', { hasText: 'Free' }).click();
     await page.locator('.pwa-banner button').click({ timeout: 1500 }).catch(() => {});
     await page.locator('input[type="number"]').first().fill('2'); // target 2 reps
