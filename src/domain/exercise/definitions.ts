@@ -14,7 +14,7 @@ export const EXERCISE_DEFINITIONS: readonly ExerciseDefinition[] = [
     difficulty: 2,
     detectionProfile: 'pushup',
     progressionProfile: 'strength-reps',
-    placement: 'floor-in-front',
+    placement: 'upper-arm',
   },
   {
     id: 'squat',

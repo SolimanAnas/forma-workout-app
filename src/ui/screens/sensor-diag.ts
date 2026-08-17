@@ -3,6 +3,8 @@ import type { SensorCapabilities, SensorKind, SensorSample } from '../../sensors
 import { queryMotionPermission, requestMotionPermission } from '../../sensors/permissions';
 import { SensorRecorder } from '../../sensors/replay/recorder';
 import type { SensorRecording } from '../../sensors/replay/recording';
+import { CameraBrightnessSource, cameraSupported } from '../../sensors/camera/camera-source';
+import { CameraRepDetector, attachCameraDetector } from '../../services/camera-detection';
 import { saveRecording } from '../../data/recordings';
 import { EXERCISE_DEFINITIONS } from '../../domain/exercise/definitions';
 import { getDetectionProfile } from '../../domain/exercise/detection-profiles';
@@ -26,11 +28,91 @@ export function renderSensorDiag(outlet: HTMLElement): void {
   );
 
   view.append(permissionSection());
+  view.append(cameraSection(outlet));
   view.append(recorderSection(outlet));
   view.append(capabilitySection(manager.listCapabilities()));
   view.append(liveSection(outlet));
 
   outlet.append(view);
+}
+
+/**
+ * Camera-based rep detection (prototype, spec §50). Works with the phone flat on the floor / front
+ * camera up — counts reps from how much your body darkens the frame as you approach. This is the
+ * only floor-placement option a PWA has (browsers expose no proximity sensor).
+ */
+function cameraSection(outlet: HTMLElement): HTMLElement {
+  const card = el('div', { class: 'card' }, [
+    el('div', { class: 'exercise-item__name' }, ['Camera rep detector (beta)']),
+    el('p', { class: 'exercise-item__meta' }, [
+      'Prop the phone flat on the floor, front camera facing up, then do push-ups over it. ' +
+        'Counts reps from how much your body darkens the frame.',
+    ]),
+  ]);
+
+  if (!cameraSupported()) {
+    card.append(el('div', { class: 'exercise-item__meta' }, ['Camera unavailable (needs HTTPS + a front camera).']));
+    return card;
+  }
+
+  const count = el('div', { class: 'mono', style: 'font-size:2.6rem;font-weight:800' }, ['0']);
+  const barFill = el('div', { class: 'bar__fill', style: 'width:0%' });
+  const bar = el('div', { class: 'bar' }, [barFill]);
+  const status = el('div', { class: 'exercise-item__meta' }, ['Camera off.']);
+  const toggle = el('button', { class: 'btn btn--primary', type: 'button' }, ['Start camera']);
+  card.append(count, bar, status, toggle);
+
+  let source: CameraBrightnessSource | null = null;
+  let unsubscribe: (() => void) | null = null;
+
+  const stop = (): void => {
+    unsubscribe?.();
+    unsubscribe = null;
+    source?.stop();
+    source = null;
+    toggle.textContent = 'Start camera';
+    status.textContent = 'Camera off.';
+    barFill.style.width = '0%';
+  };
+
+  const start = async (): Promise<void> => {
+    const src = new CameraBrightnessSource();
+    const detector = new CameraRepDetector();
+    try {
+      await src.start();
+    } catch {
+      status.textContent = 'Camera denied or unavailable.';
+      return;
+    }
+    source = src;
+    toggle.textContent = 'Stop camera';
+    status.textContent = 'Counting… move over the camera.';
+    unsubscribe = attachCameraDetector(
+      src,
+      detector,
+      (c) => {
+        count.textContent = String(c);
+      },
+      (_sample, signal) => {
+        barFill.style.width = `${Math.max(0, Math.min(100, (signal / 25) * 100))}%`;
+      },
+    );
+  };
+
+  toggle.addEventListener('click', () => {
+    if (source) stop();
+    else void start();
+  });
+
+  const onLeave = (): void => {
+    if (!outlet.contains(card)) {
+      stop();
+      window.removeEventListener('hashchange', onLeave);
+    }
+  };
+  window.addEventListener('hashchange', onLeave);
+
+  return card;
 }
 
 /** Record a real sensor session, see how the current profile scores it, and export it for tuning. */

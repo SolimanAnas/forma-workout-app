@@ -14,6 +14,15 @@ export const PLACEMENTS: Record<string, PlacementConfig> = {
     steps: ['Put the phone flat on the floor in front of your head.', 'Screen facing up.'],
     recommendedDistance: '10–30 cm',
   },
+  'upper-arm': {
+    id: 'upper-arm',
+    title: 'Strap the phone to your upper arm',
+    steps: [
+      'Use an armband on your upper arm (or a snug sleeve pocket).',
+      'This lets the phone move with each rep so it can count automatically.',
+      'On the floor the phone can’t detect push-ups — use the armband, or tap to count.',
+    ],
+  },
   'pocket-or-thigh': {
     id: 'pocket-or-thigh',
     title: 'Secure the phone at your thigh',

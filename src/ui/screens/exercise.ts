@@ -1,6 +1,7 @@
 import { getExerciseById } from '../../domain/exercise/definitions';
 import { getDetectionProfile } from '../../domain/exercise/detection-profiles';
 import { getHowto } from '../../domain/exercise/howto';
+import { getPlacement } from '../../domain/exercise/placement';
 import type { WorkoutMode } from '../../domain/workout/types';
 import { setPendingLaunch } from '../../app/workout-context';
 import type { WorkoutLaunch } from '../../services/workout-factory';
@@ -53,11 +54,28 @@ export function renderExercise(outlet: HTMLElement, id?: string): void {
   );
   view.append(hero);
 
+  // Phone placement (so the sensor can actually see the movement).
+  const placement = getPlacement(exercise.placement);
+  if (placement) {
+    const steps = el('ul', { class: 'howto placement-steps' });
+    for (const step of placement.steps) steps.append(el('li', {}, [step]));
+    view.append(
+      el('div', { class: 'card' }, [
+        el('div', { class: 'eyebrow' }, ['📱 Phone placement']),
+        el('div', { class: 'exercise-item__name' }, [placement.title]),
+        steps,
+        ...(placement.recommendedDistance
+          ? [el('div', { class: 'exercise-item__meta' }, [`Distance: ${placement.recommendedDistance}`])]
+          : []),
+      ]),
+    );
+  }
+
   // How-to.
-  const steps = getHowto(exercise.id);
-  if (steps.length > 0) {
+  const howto = getHowto(exercise.id);
+  if (howto.length > 0) {
     const list = el('ol', { class: 'howto' });
-    for (const step of steps) list.append(el('li', {}, [step]));
+    for (const step of howto) list.append(el('li', {}, [step]));
     view.append(el('div', { class: 'card' }, [el('div', { class: 'eyebrow' }, ['How to']), list]));
   }
 

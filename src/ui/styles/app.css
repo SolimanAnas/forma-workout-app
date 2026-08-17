@@ -572,6 +572,10 @@ input.toggle:focus-visible { outline: 3px solid var(--color-accent); outline-off
   color: var(--color-accent-text);
   font-weight: 700;
 }
+.placement-steps {
+  margin-top: var(--space-2);
+  list-style: disc;
+}
 .rep-count.tappable {
   cursor: pointer;
   user-select: none;
