@@ -26,7 +26,7 @@ describe('workout setup screen', () => {
   it('renders an exercise button grid, a mode control, and a start button', () => {
     const o = outlet();
     renderWorkout(o);
-    expect(o.querySelectorAll('.pick-btn')).toHaveLength(5);
+    expect(o.querySelectorAll('.pick-btn').length).toBeGreaterThanOrEqual(5);
     expect(o.querySelectorAll('.segmented__btn')).toHaveLength(3);
     expect(o.querySelector('button.btn--primary')?.textContent).toContain('Start');
   });

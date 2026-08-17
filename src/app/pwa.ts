@@ -12,12 +12,18 @@ export function setupPWA(): void {
       showBanner('A new version is available.', 'Reload', () => void updateSW(true));
     },
     onOfflineReady() {
-      showBanner('Ready to work offline.', 'Dismiss');
+      // Informational — auto-dismiss so it never sits over the primary CTA.
+      showBanner('Ready to work offline.', 'Dismiss', undefined, 5000);
     },
   });
 }
 
-function showBanner(text: string, actionLabel: string, onAction?: () => void): void {
+function showBanner(
+  text: string,
+  actionLabel: string,
+  onAction?: () => void,
+  autoDismissMs?: number,
+): void {
   document.querySelector('.pwa-banner')?.remove();
 
   const button = el('button', { class: 'btn', type: 'button' }, [actionLabel]);
@@ -30,4 +36,7 @@ function showBanner(text: string, actionLabel: string, onAction?: () => void): v
     onAction?.();
   });
   document.body.append(banner);
+  if (autoDismissMs) {
+    window.setTimeout(() => banner.remove(), autoDismissMs);
+  }
 }

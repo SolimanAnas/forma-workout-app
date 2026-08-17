@@ -1,5 +1,5 @@
 import { EXERCISE_DEFINITIONS } from '../../domain/exercise/definitions';
-import { EXERCISE_ICONS } from '../exercise-icons';
+import { exerciseEmoji, exerciseImage } from '../exercise-image';
 import { el, screen } from '../dom';
 
 export function renderExercises(outlet: HTMLElement): void {
@@ -13,11 +13,24 @@ export function renderExercises(outlet: HTMLElement): void {
       ...ex.muscleGroups.primary.map((m) => el('span', { class: 'tag' }, [m])),
     ]);
 
+    const img = el('img', {
+      class: 'exercise-card__img',
+      src: exerciseImage(ex.id),
+      alt: ex.name,
+      loading: 'lazy',
+      width: '64',
+      height: '64',
+    }) as HTMLImageElement;
+    img.addEventListener('error', () => {
+      const fallback = el('div', { class: 'exercise-card__icon', 'aria-hidden': 'true' }, [
+        exerciseEmoji(ex.id),
+      ]);
+      img.replaceWith(fallback);
+    });
+
     list.append(
       el('li', { class: 'card exercise-card' }, [
-        el('div', { class: 'exercise-card__icon', 'aria-hidden': 'true' }, [
-          EXERCISE_ICONS[ex.id] ?? '🏋️',
-        ]),
+        img,
         el('div', {}, [
           el('div', { class: 'exercise-item__name' }, [ex.name]),
           el('div', { class: 'exercise-item__meta' }, [

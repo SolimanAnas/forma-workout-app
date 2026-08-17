@@ -10,7 +10,7 @@ test.describe('Forma PWA', () => {
 
     await page.locator('.app-nav__item[href="#/exercises"]').click();
     await expect(page.locator('.screen__title')).toHaveText('Exercises');
-    await expect(page.locator('.exercise-list .card')).toHaveCount(5);
+    await expect(page.locator('.exercise-list .card')).toHaveCount(12);
 
     await page.locator('.app-nav__item[href="#/workout"]').click();
     await expect(page.locator('button.btn--primary')).toContainText('Start');
@@ -37,6 +37,7 @@ test.describe('Forma PWA', () => {
   }) => {
     await page.goto('./#/workout', { waitUntil: 'domcontentloaded' });
     await page.locator('.segmented__btn', { hasText: 'Free' }).click();
+    await page.locator('.pwa-banner button').click({ timeout: 1500 }).catch(() => {});
     await page.locator('button.btn--primary', { hasText: 'Start' }).click();
 
     await expect(page.locator('.workout .rep-count')).toBeVisible();
@@ -48,6 +49,7 @@ test.describe('Forma PWA', () => {
   test('tap-to-count increments reps and completes a workout', async ({ page }) => {
     await page.goto('./#/workout', { waitUntil: 'domcontentloaded' });
     await page.locator('.segmented__btn', { hasText: 'Free' }).click();
+    await page.locator('.pwa-banner button').click({ timeout: 1500 }).catch(() => {});
     await page.locator('input[type="number"]').first().fill('2'); // target 2 reps
     await page.locator('button.btn--primary', { hasText: 'Start' }).click();
 

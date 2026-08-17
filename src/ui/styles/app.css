@@ -219,6 +219,14 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
 }
+.exercise-card__img {
+  width: 64px;
+  height: 64px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--color-surface-2);
+}
 
 /* ── Buttons ──────────────────────────────────────────── */
 .btn {
@@ -309,6 +317,13 @@
 .pick-btn__icon {
   font-size: 1.6rem;
   line-height: 1;
+}
+.pick-btn__img {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  display: block;
 }
 .pick-btn__name { font-weight: 700; font-size: 0.9rem; }
 .pick-btn__meta {

@@ -33,7 +33,7 @@ describe('screen render smoke tests (jsdom)', () => {
     const o = outlet();
     renderWorkout(o);
     expect(o.querySelectorAll('select')).toHaveLength(0); // exercises are buttons, not a dropdown
-    expect(o.querySelectorAll('.pick-btn')).toHaveLength(5);
+    expect(o.querySelectorAll('.pick-btn')).toHaveLength(EXERCISE_DEFINITIONS.length);
     expect(o.querySelector('.pick-btn[aria-pressed="true"]')).not.toBeNull();
     expect(o.querySelectorAll('.segmented__btn')).toHaveLength(3);
     expect(o.querySelector('button.btn--primary')?.textContent).toContain('Start');

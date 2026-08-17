@@ -4,7 +4,7 @@ import { setPendingLaunch } from '../../app/workout-context';
 import type { WorkoutLaunch } from '../../services/workout-factory';
 import { getDetectionProfile } from '../../domain/exercise/detection-profiles';
 import { motionSupported, requestMotionPermission } from '../../sensors/permissions';
-import { EXERCISE_ICONS } from '../exercise-icons';
+import { exerciseEmoji, exerciseImage } from '../exercise-image';
 import { el, screen } from '../dom';
 
 const MOTION_SENSORS = new Set(['accelerometer', 'gyroscope', 'orientation']);
@@ -28,8 +28,19 @@ export function renderWorkout(outlet: HTMLElement): void {
   const grid = el('div', { class: 'pick-grid', role: 'group', 'aria-label': 'Exercise' });
   const exerciseButtons: HTMLButtonElement[] = [];
   for (const ex of EXERCISE_DEFINITIONS) {
+    const img = el('img', {
+      class: 'pick-btn__img',
+      src: exerciseImage(ex.id),
+      alt: '',
+      loading: 'lazy',
+      width: '52',
+      height: '52',
+    }) as HTMLImageElement;
+    img.addEventListener('error', () => {
+      img.replaceWith(el('span', { class: 'pick-btn__icon', 'aria-hidden': 'true' }, [exerciseEmoji(ex.id)]));
+    });
     const btn = el('button', { class: 'pick-btn', type: 'button' }, [
-      el('span', { class: 'pick-btn__icon', 'aria-hidden': 'true' }, [EXERCISE_ICONS[ex.id] ?? '🏋️']),
+      img,
       el('span', { class: 'pick-btn__name' }, [ex.name]),
       el('span', { class: 'pick-btn__meta' }, [ex.category]),
     ]) as HTMLButtonElement;
