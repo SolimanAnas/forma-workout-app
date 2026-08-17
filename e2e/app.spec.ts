@@ -62,11 +62,11 @@ test.describe('Forma PWA', () => {
     await page.locator('input[type="number"]').first().fill('2'); // target 2 reps
     await page.locator('button.btn--primary', { hasText: 'Start' }).click();
 
-    const rep = page.locator('.rep-count.tappable');
-    await expect(rep).toBeVisible();
+    const stage = page.locator('.workout__stage.tappable');
+    await expect(stage).toBeVisible();
     await page.waitForTimeout(2600); // let the 3-2-1 countdown finish
-    await rep.click();
-    await rep.click();
+    await stage.click({ position: { x: 40, y: 40 } });
+    await stage.click({ position: { x: 40, y: 40 } });
 
     await expect(page.locator('.screen__title')).toHaveText('Workout complete');
   });

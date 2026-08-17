@@ -84,10 +84,11 @@ describe('active workout (no sensor → manual reps)', () => {
 
     const repCount = o.querySelector<HTMLElement>('.rep-count');
     expect(repCount?.textContent).toBe('0');
-    // Tap-to-count is on by default → the rep number is the tap target.
-    expect(repCount?.classList.contains('tappable')).toBe(true);
+    // Tap-to-count is on by default → the whole stage (not just the number) is the tap target.
+    const stage = o.querySelector<HTMLElement>('.workout__stage');
+    expect(stage?.classList.contains('tappable')).toBe(true);
 
-    repCount?.click();
+    stage?.click();
     await nextFrames();
 
     // Reaching the target finishes the workout → results view + persisted record.

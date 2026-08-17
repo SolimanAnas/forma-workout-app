@@ -35,6 +35,8 @@ export interface DashboardData {
   muscle: Record<string, number>;
   perExercise: { exerciseId: string; level: number; target: { sets: number; reps: number } }[];
   challenge: DailyChallenge;
+  /** Reps per day for the last 7 days (oldest → newest). */
+  week: { label: string; reps: number; active: boolean }[];
 }
 
 export async function loadDashboard(now: number = Date.now()): Promise<DashboardData> {
@@ -49,6 +51,16 @@ export async function loadDashboard(now: number = Date.now()): Promise<Dashboard
   const todayWorkouts = workouts.filter((w) => dayIndex(w.date) === today);
   const todayReps = todayWorkouts.reduce((s, w) => s + w.totalReps, 0);
   const totalReps = workouts.reduce((s, w) => s + w.totalReps, 0);
+
+  // Reps per day for the last 7 days.
+  const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const week = Array.from({ length: 7 }, (_, i) => {
+    const dayStart = (today - (6 - i)) * DAY_MS;
+    const reps = workouts
+      .filter((w) => dayIndex(w.date) === today - (6 - i))
+      .reduce((s, w) => s + w.totalReps, 0);
+    return { label: DAY_LABELS[new Date(dayStart).getDay()], reps, active: reps > 0 };
+  });
 
   const muscle = muscleVolume(
     workouts.flatMap(entriesOf),
@@ -80,5 +92,6 @@ export async function loadDashboard(now: number = Date.now()): Promise<Dashboard
       target: p.target,
     })),
     challenge,
+    week,
   };
 }

@@ -38,21 +38,22 @@ export async function renderActiveWorkout(outlet: HTMLElement): Promise<void> {
   stage.append(title, big, label, detail);
   view.append(stage);
 
-  // Tap-to-count: the rep number is a tap target (works alongside sensor counting).
+  // Tap-to-count: the ENTIRE stage (big upper area) is the tap target, not just the number, so
+  // reps are easy to hit mid-exercise (works alongside sensor counting).
   if (settings.tapToCount) {
-    big.classList.add('tappable');
-    big.setAttribute('role', 'button');
-    big.setAttribute('tabindex', '0');
-    big.setAttribute('aria-label', 'Tap to count a rep');
+    stage.classList.add('tappable');
+    stage.setAttribute('role', 'button');
+    stage.setAttribute('tabindex', '0');
+    stage.setAttribute('aria-label', 'Tap anywhere to count a rep');
     const tap = (): void => session.simulateRep();
-    big.addEventListener('click', tap);
-    big.addEventListener('keydown', (e) => {
+    stage.addEventListener('click', tap);
+    stage.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         tap();
       }
     });
-    stage.append(el('div', { class: 'workout__hint' }, ['Tap the number to count a rep']));
+    stage.append(el('div', { class: 'workout__hint' }, ['Tap anywhere here to count a rep']));
   }
 
   // Lower third: session controls.
