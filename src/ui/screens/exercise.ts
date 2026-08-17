@@ -14,7 +14,7 @@ const MOTION_SENSORS = new Set(['accelerometer', 'gyroscope', 'orientation']);
 const STARTABLE: { mode: WorkoutMode; label: string }[] = [
   { mode: 'free', label: 'Free' },
   { mode: 'sets', label: 'Sets' },
-  { mode: 'amrap', label: 'AMRAP' },
+  { mode: 'amrap', label: 'Max' },
 ];
 
 /** Exercise detail + setup page. Opened from the Workout picker via `#/exercise/<id>`. */
@@ -62,31 +62,6 @@ export function renderExercise(outlet: HTMLElement, id?: string): void {
     }
   });
   view.append(el('figure', { class: 'ex-poster-wrap' }, [poster]));
-
-  // Phone placement (so the sensor can actually see the movement).
-  const placement = getPlacement(exercise.placement);
-  if (placement) {
-    const steps = el('ul', { class: 'howto placement-steps' });
-    for (const step of placement.steps) steps.append(el('li', {}, [step]));
-    view.append(
-      el('div', { class: 'card' }, [
-        el('div', { class: 'eyebrow' }, ['📱 Phone placement']),
-        el('div', { class: 'exercise-item__name' }, [placement.title]),
-        steps,
-        ...(placement.recommendedDistance
-          ? [el('div', { class: 'exercise-item__meta' }, [`Distance: ${placement.recommendedDistance}`])]
-          : []),
-      ]),
-    );
-  }
-
-  // How-to.
-  const howto = getHowto(exercise.id);
-  if (howto.length > 0) {
-    const list = el('ol', { class: 'howto' });
-    for (const step of howto) list.append(el('li', {}, [step]));
-    view.append(el('div', { class: 'card' }, [el('div', { class: 'eyebrow' }, ['How to']), list]));
-  }
 
   // Setup: mode + params + start.
   let selectedMode: WorkoutMode = 'free';
@@ -165,6 +140,32 @@ export function renderExercise(outlet: HTMLElement, id?: string): void {
   });
 
   view.append(start, hint);
+
+  // Phone placement (so the sensor can actually see the movement).
+  const placement = getPlacement(exercise.placement);
+  if (placement) {
+    const steps = el('ul', { class: 'howto placement-steps' });
+    for (const step of placement.steps) steps.append(el('li', {}, [step]));
+    view.append(
+      el('div', { class: 'card' }, [
+        el('div', { class: 'eyebrow' }, ['📱 Phone placement']),
+        el('div', { class: 'exercise-item__name' }, [placement.title]),
+        steps,
+        ...(placement.recommendedDistance
+          ? [el('div', { class: 'exercise-item__meta' }, [`Distance: ${placement.recommendedDistance}`])]
+          : []),
+      ]),
+    );
+  }
+
+  // How-to.
+  const howto = getHowto(exercise.id);
+  if (howto.length > 0) {
+    const list = el('ol', { class: 'howto' });
+    for (const step of howto) list.append(el('li', {}, [step]));
+    view.append(el('div', { class: 'card' }, [el('div', { class: 'eyebrow' }, ['How to']), list]));
+  }
+
   outlet.append(view);
 }
 
