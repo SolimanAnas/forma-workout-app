@@ -8,7 +8,9 @@ import { renderExercises } from '../../src/ui/screens/exercises';
 import { renderProgress } from '../../src/ui/screens/progress';
 import { renderProfile } from '../../src/ui/screens/profile';
 import { renderSensorDiag } from '../../src/ui/screens/sensor-diag';
+import { renderGym } from '../../src/ui/screens/gym';
 import { EXERCISE_DEFINITIONS } from '../../src/domain/exercise/definitions';
+import { GYM_SPLITS } from '../../src/domain/gym/splits';
 
 function outlet(): HTMLElement {
   const el = document.createElement('main');
@@ -52,6 +54,22 @@ describe('screen render smoke tests (jsdom)', () => {
     const o = outlet();
     await renderProgress(o);
     expect(o.querySelector('.screen__title')?.textContent).toBe('Progress');
+  });
+
+  it('Gym lists splits, each linking to its detail page', () => {
+    const o = outlet();
+    renderGym(o);
+    expect(o.querySelectorAll('a.gym-card')).toHaveLength(GYM_SPLITS.length);
+    expect(o.querySelector('a.gym-card')?.getAttribute('href')).toBe(`#/gym/${GYM_SPLITS[0].id}`);
+  });
+
+  it('Gym split detail renders day tabs and exercise cards with variations', () => {
+    const o = outlet();
+    renderGym(o, 'ppl');
+    expect(o.querySelectorAll('.day-tab')).toHaveLength(3); // Push / Pull / Legs
+    expect(o.querySelectorAll('.gym-ex').length).toBeGreaterThan(0);
+    expect(o.querySelector('.gym-ex__sets')).not.toBeNull();
+    expect(o.querySelector('.chip')).not.toBeNull(); // variations
   });
 
   it('Profile renders settings controls (async)', async () => {
