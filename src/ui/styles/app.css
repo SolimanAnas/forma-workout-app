@@ -816,14 +816,9 @@ input.toggle:focus-visible { outline: 3px solid var(--color-accent); outline-off
   width: 48px;
   height: 48px;
   flex: none;
-  display: grid;
-  place-items: center;
   border-radius: var(--radius-sm);
-  background: var(--grad-accent);
-  color: var(--color-on-accent);
-  font-weight: 900;
-  font-size: 1.5rem;
   box-shadow: var(--glow-accent);
+  object-fit: cover;
 }
 .about__app-name {
   font-weight: 800;
@@ -840,14 +835,9 @@ input.toggle:focus-visible { outline: 3px solid var(--color-accent); outline-off
   width: 48px;
   height: 48px;
   flex: none;
-  display: grid;
-  place-items: center;
   border-radius: 50%;
-  background: var(--color-surface-2);
   border: 1px solid var(--color-border-strong);
-  color: var(--color-accent-text);
-  font-weight: 800;
-  letter-spacing: 0.03em;
+  object-fit: cover;
 }
 .about__dev-body {
   min-width: 0;

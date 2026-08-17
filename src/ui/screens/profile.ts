@@ -71,7 +71,7 @@ function aboutCard(): HTMLElement {
 
     // App identity.
     el('div', { class: 'about__app' }, [
-      el('div', { class: 'about__logo', 'aria-hidden': 'true' }, ['F']),
+      el('img', { class: 'about__logo', src: '/forma-workout-app/icons/icon-192x192.png', alt: 'Forma icon' }),
       el('div', {}, [
         el('div', { class: 'about__app-name' }, ['Forma']),
         el('div', { class: 'exercise-item__meta' }, [
@@ -82,7 +82,7 @@ function aboutCard(): HTMLElement {
 
     // Developer.
     el('div', { class: 'about__dev' }, [
-      el('div', { class: 'about__avatar', 'aria-hidden': 'true' }, ['SA']),
+      el('img', { class: 'about__avatar profile-img', src: 'https://raw.githubusercontent.com/SolimanAnas/CPG-2025/main/images/image-01.png', alt: 'Soliman Anas Soliman' }),
       el('div', { class: 'about__dev-body' }, [
         el('div', { class: 'about__dev-name' }, ['Soliman Anas']),
         el('div', { class: 'about__dev-role' }, ['EMT, RN, MSN, MBA · Graphic Designer & Web Developer']),
