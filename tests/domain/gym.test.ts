@@ -41,6 +41,21 @@ describe('gym splits', () => {
     expect(categories).toEqual(['Chest', 'Shoulders', 'Triceps']);
   });
 
+  it('Push chest has exactly 3 slots with recommended defaults', () => {
+    const push = getGymSplit('ppl')?.days.find((d) => d.id === 'push');
+    const chest = push?.slots.filter((s) => s.category === 'Chest') ?? [];
+    expect(chest.map((s) => s.target)).toEqual(['Primary Press', 'Secondary Press', 'Isolation']);
+    expect(chest.map((s) => s.recommendedOption)).toEqual([
+      'Incline Bench Press',
+      'Bench Press',
+      'Pec Deck',
+    ]);
+    // Every recommendedOption must exist in its own options list.
+    for (const s of chest) {
+      expect(s.options.some((o) => o.name === s.recommendedOption)).toBe(true);
+    }
+  });
+
   it('looks up a split by id', () => {
     expect(getGymSplit('ppl')?.short).toBe('PPL');
     expect(getGymSplit('nope')).toBeUndefined();

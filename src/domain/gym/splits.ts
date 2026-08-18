@@ -8,7 +8,8 @@ const slot = (
   sets: string,
   reps: string,
   options: SlotOption[],
-): GymSlot => ({ id, category, target, sets, reps, options });
+  recommendedOption?: string,
+): GymSlot => ({ id, category, target, sets, reps, options, recommendedOption });
 
 // ── Option pools (reused across days) ──
 const CHEST_PRESS = [
@@ -27,6 +28,29 @@ const CHEST_ISO = [
   opt('Cable Fly', 'General Chest'),
   opt('Dumbbell Fly', 'General Chest'),
   opt('Chest Dips', 'Lower Chest'),
+];
+// Push-day chest: three purpose-built slots (Primary / Secondary / Isolation).
+const CHEST_PRIMARY = [
+  opt('Incline Bench Press', 'Upper Chest'),
+  opt('Incline Dumbbell Press', 'Upper Chest'),
+  opt('Incline Machine Press', 'Upper Chest'),
+  opt('Bench Press', 'Mid Chest'),
+  opt('Dumbbell Bench Press', 'Mid Chest'),
+  opt('Machine Chest Press', 'General Chest'),
+];
+const CHEST_SECONDARY = [
+  opt('Bench Press', 'Mid Chest'),
+  opt('Dumbbell Bench Press', 'Mid Chest'),
+  opt('Machine Chest Press', 'General Chest'),
+  opt('Chest Dips', 'Lower Chest'),
+  opt('Decline Bench Press', 'Lower Chest'),
+];
+const CHEST_ISOLATION = [
+  opt('Pec Deck', 'General Chest'),
+  opt('Cable Fly', 'General Chest'),
+  opt('Dumbbell Fly', 'General Chest'),
+  opt('Low-to-High Cable Fly', 'Upper Chest'),
+  opt('High-to-Low Cable Fly', 'Lower Chest'),
 ];
 const SHOULDER_PRESS = [
   opt('Overhead Press', 'Front Delts'),
@@ -129,8 +153,9 @@ export const GYM_SPLITS: readonly GymSplit[] = [
         name: 'Push',
         focus: 'Chest · Shoulders · Triceps',
         slots: [
-          slot('push-chest-main', 'Chest', 'Main Press', '3–4', '6–10', CHEST_PRESS),
-          slot('push-chest-iso', 'Chest', 'Secondary / Isolation', '3', '8–12', CHEST_ISO),
+          slot('push-chest-primary', 'Chest', 'Primary Press', '3–4', '6–10', CHEST_PRIMARY, 'Incline Bench Press'),
+          slot('push-chest-secondary', 'Chest', 'Secondary Press', '3', '8–12', CHEST_SECONDARY, 'Bench Press'),
+          slot('push-chest-iso', 'Chest', 'Isolation', '3', '12–15', CHEST_ISOLATION, 'Pec Deck'),
           slot('push-sh-press', 'Shoulders', 'Shoulder Press', '3', '6–10', SHOULDER_PRESS),
           slot('push-sh-side', 'Shoulders', 'Side Delts', '3', '12–20', SIDE_DELTS),
           slot('push-tri-oh', 'Triceps', 'Overhead', '3', '10–15', TRI_OVERHEAD),

@@ -11,12 +11,11 @@ import { getAllSettings } from '../data/settings';
 import { renderHome } from '../ui/screens/home';
 import { renderWorkout } from '../ui/screens/workout';
 import { renderExercises } from '../ui/screens/exercises';
-import { renderProgress } from '../ui/screens/progress';
 import { renderProfile } from '../ui/screens/profile';
 import { renderSensorDiag } from '../ui/screens/sensor-diag';
 import { renderActiveWorkout } from '../ui/screens/active-workout';
 import { renderExercise } from '../ui/screens/exercise';
-import { renderGym } from '../ui/screens/gym';
+import { renderGym, initGymSelections } from '../ui/screens/gym';
 
 async function bootstrap(): Promise<void> {
   const root = document.querySelector<HTMLDivElement>('#app');
@@ -27,6 +26,9 @@ async function bootstrap(): Promise<void> {
   applyTheme(settings.theme);
   setState({ devMode: settings.devMode });
 
+  // Hydrate persisted gym slot selections (best-effort).
+  await initGymSelections().catch(() => {});
+
   const outlet = mountShell(root);
 
   const router = new Router(outlet, 'home')
@@ -35,7 +37,6 @@ async function bootstrap(): Promise<void> {
     .add({ path: 'exercise', title: 'Exercise', render: renderExercise })
     .add({ path: 'exercises', title: 'Exercises', render: renderExercises })
     .add({ path: 'gym', title: 'Gym', render: renderGym })
-    .add({ path: 'progress', title: 'Progress', render: renderProgress })
     .add({ path: 'settings', title: 'Settings', render: renderProfile })
     .add({ path: 'active-workout', title: 'Active workout', render: renderActiveWorkout })
     .add({ path: 'sensor-diag', title: 'Sensor diagnostics', render: renderSensorDiag });

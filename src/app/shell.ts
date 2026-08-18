@@ -15,7 +15,6 @@ const NAV_ITEMS: NavItem[] = [
   { path: 'workout', label: 'Workout', icon: '💪' },
   { path: 'gym', label: 'Gym', icon: '🏋️' },
   { path: 'exercises', label: 'Exercises', icon: '📋' },
-  { path: 'progress', label: 'Progress', icon: '📈' },
   { path: 'settings', label: 'Settings', icon: '⚙️' },
 ];
 

@@ -1186,3 +1186,12 @@ input.toggle:focus-visible { outline: 3px solid var(--color-accent); outline-off
   text-decoration: line-through;
   color: var(--color-muted);
 }
+.gym-reset {
+  width: 100%;
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-muted);
+  font-weight: 600;
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-2);
+}

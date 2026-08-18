@@ -18,6 +18,8 @@ export interface GymSlot {
   reps: string;
   /** Suggested exercises to choose from. */
   options: SlotOption[];
+  /** Name of the default/recommended option (falls back to options[0]). */
+  recommendedOption?: string;
 }
 
 export interface GymDay {

@@ -1,5 +1,10 @@
 import { ACCESSORY_POOL, GYM_SPLITS, getGymSplit } from '../../domain/gym/splits';
 import type { GymDay, GymSlot, SlotOption } from '../../domain/gym/types';
+import {
+  clearGymSelections,
+  loadGymSelections,
+  saveGymSelection,
+} from '../../data/gym-selections';
 import { el, screen } from '../dom';
 
 /** Gym tab. `#/gym` lists splits; `#/gym/<splitId>` is the slot-based workout builder. */
@@ -8,19 +13,38 @@ export function renderGym(outlet: HTMLElement, splitId?: string): void {
   else renderSplitList(outlet);
 }
 
-// ── In-session state (persists across navigation, resets on reload) ──
-const selections = new Map<string, string>(); // `${dayId}:${slotId}` → option name
-const addedSlots = new Map<string, GymSlot[]>(); // dayId → user-added slots
+// ── Selection state (mirrors persisted store; loaded once at boot via initGymSelections) ──
+const selections = new Map<string, string>(); // `${splitId}:${dayId}:${slotId}` → option name
+const addedSlots = new Map<string, GymSlot[]>(); // `${splitId}:${dayId}` → user-added slots
 
-function selectedOption(dayId: string, slot: GymSlot): SlotOption {
-  const chosen = selections.get(`${dayId}:${slot.id}`);
-  return slot.options.find((o) => o.name === chosen) ?? slot.options[0];
+/** Hydrate the in-memory selection cache from persistence. Call once during app bootstrap. */
+export async function initGymSelections(): Promise<void> {
+  const saved = await loadGymSelections();
+  for (const [k, v] of Object.entries(saved)) selections.set(k, v);
 }
-function setSelection(dayId: string, slotId: string, name: string): void {
-  selections.set(`${dayId}:${slotId}`, name);
+
+const key = (splitId: string, dayId: string, slotId: string): string =>
+  `${splitId}:${dayId}:${slotId}`;
+
+/** Recommended default for a slot (falls back to first option). */
+function defaultOption(slot: GymSlot): SlotOption {
+  return slot.options.find((o) => o.name === slot.recommendedOption) ?? slot.options[0];
 }
-function daySlots(day: GymDay): GymSlot[] {
-  return [...day.slots, ...(addedSlots.get(day.id) ?? [])];
+
+/** Saved choice (if still valid) → recommended default → first option. */
+function selectedOption(splitId: string, dayId: string, slot: GymSlot): SlotOption {
+  const chosen = selections.get(key(splitId, dayId, slot.id));
+  return slot.options.find((o) => o.name === chosen) ?? defaultOption(slot);
+}
+
+function setSelection(splitId: string, dayId: string, slotId: string, name: string): void {
+  const k = key(splitId, dayId, slotId);
+  selections.set(k, name);
+  void saveGymSelection(k, name).catch(() => {});
+}
+
+function daySlots(splitId: string, day: GymDay): GymSlot[] {
+  return [...day.slots, ...(addedSlots.get(`${splitId}:${day.id}`) ?? [])];
 }
 
 // ── Split list ──
@@ -71,7 +95,7 @@ function renderSplitDetail(outlet: HTMLElement, splitId: string): void {
 
   const showDay = (day: GymDay, active: HTMLButtonElement): void => {
     for (const b of buttons) b.setAttribute('aria-pressed', String(b === active));
-    renderBuilder(day, container);
+    renderBuilder(splitId, day, container);
   };
   split.days.forEach((day, i) => {
     const btn = el('button', { class: 'day-tab', type: 'button' }, [day.name]) as HTMLButtonElement;
@@ -87,14 +111,14 @@ function renderSplitDetail(outlet: HTMLElement, splitId: string): void {
 }
 
 // ── Builder view ──
-function renderBuilder(day: GymDay, container: HTMLElement): void {
-  const rerender = (): void => renderBuilder(day, container);
+function renderBuilder(splitId: string, day: GymDay, container: HTMLElement): void {
+  const rerender = (): void => renderBuilder(splitId, day, container);
   container.replaceChildren();
   container.append(el('div', { class: 'gym-day__focus' }, [day.focus]));
 
   // Group slots by category, preserving order.
   const groups = new Map<string, GymSlot[]>();
-  for (const s of daySlots(day)) {
+  for (const s of daySlots(splitId, day)) {
     const list = groups.get(s.category) ?? [];
     list.push(s);
     groups.set(s.category, list);
@@ -102,12 +126,13 @@ function renderBuilder(day: GymDay, container: HTMLElement): void {
 
   for (const [category, slots] of groups) {
     container.append(el('div', { class: 'gym-cat' }, [category]));
-    for (const s of slots) container.append(slotCard(day, s, rerender));
+    for (const s of slots) container.append(slotCard(splitId, day, s, rerender));
   }
 
   const addBtn = el('button', { class: 'btn gym-add', type: 'button' }, ['+ Add exercise']);
   addBtn.addEventListener('click', () => {
-    const added = addedSlots.get(day.id) ?? [];
+    const listKey = `${splitId}:${day.id}`;
+    const added = addedSlots.get(listKey) ?? [];
     added.push({
       id: `added-${day.id}-${added.length + 1}`,
       category: 'Extra',
@@ -116,19 +141,27 @@ function renderBuilder(day: GymDay, container: HTMLElement): void {
       reps: '10–15',
       options: ACCESSORY_POOL,
     });
-    addedSlots.set(day.id, added);
+    addedSlots.set(listKey, added);
+    rerender();
+  });
+
+  const resetBtn = el('button', { class: 'btn gym-reset', type: 'button' }, ['↺ Reset to recommended']);
+  resetBtn.addEventListener('click', () => {
+    const prefix = `${splitId}:${day.id}:`;
+    for (const k of [...selections.keys()]) if (k.startsWith(prefix)) selections.delete(k);
+    void clearGymSelections(prefix).catch(() => {});
     rerender();
   });
 
   const startBtn = el('button', { class: 'btn btn--primary', type: 'button' }, ['Start workout']);
-  startBtn.addEventListener('click', () => renderSession(day, container));
+  startBtn.addEventListener('click', () => renderSession(splitId, day, container));
 
-  container.append(addBtn, startBtn);
+  container.append(addBtn, resetBtn, startBtn);
 }
 
-function slotCard(day: GymDay, s: GymSlot, rerender: () => void): HTMLElement {
-  const selected = selectedOption(day.id, s);
-  const duplicate = isDuplicateRegion(day, s, selected.region);
+function slotCard(splitId: string, day: GymDay, s: GymSlot, rerender: () => void): HTMLElement {
+  const selected = selectedOption(splitId, day.id, s);
+  const duplicate = isDuplicateRegion(splitId, day, s, selected.region);
 
   const indicator = duplicate
     ? el('span', { class: 'slot__flag slot__flag--warn', title: 'Overlaps another slot' }, ['⚠'])
@@ -146,7 +179,6 @@ function slotCard(day: GymDay, s: GymSlot, rerender: () => void): HTMLElement {
 
   const changeBtn = el('button', { class: 'slot__change', type: 'button' }, ['Change']);
   card.querySelector('.slot__pick')?.append(changeBtn);
-
   changeBtn.addEventListener('click', () => {
     const existing = card.querySelector('.slot-picker');
     if (existing) {
@@ -155,27 +187,28 @@ function slotCard(day: GymDay, s: GymSlot, rerender: () => void): HTMLElement {
       return;
     }
     changeBtn.setAttribute('aria-expanded', 'true');
-    card.append(picker(day, s, rerender));
+    card.append(picker(splitId, day, s, rerender));
   });
 
   if (duplicate) {
-    card.append(el('div', { class: 'slot__dup-note' }, [`Same region (${selected.region}) as another slot — try a different angle.`]));
+    card.append(
+      el('div', { class: 'slot__dup-note' }, [
+        `Same region (${selected.region}) as another slot — try a different angle.`,
+      ]),
+    );
   }
   return card;
 }
 
-function picker(day: GymDay, s: GymSlot, rerender: () => void): HTMLElement {
-  const covered = coveredRegions(day, s);
-  const selected = selectedOption(day.id, s);
+function picker(splitId: string, day: GymDay, s: GymSlot, rerender: () => void): HTMLElement {
+  const covered = coveredRegions(splitId, day, s);
+  const selected = selectedOption(splitId, day.id, s);
   const box = el('div', { class: 'slot-picker' });
 
   if (covered.size > 0) {
-    box.append(
-      el('div', { class: 'slot-picker__hint' }, [`Already covering: ${[...covered].join(', ')}`]),
-    );
+    box.append(el('div', { class: 'slot-picker__hint' }, [`Already covering: ${[...covered].join(', ')}`]));
   }
 
-  // Uncovered regions first (smart suggestions avoid duplicating what's already trained).
   const sorted = [...s.options].sort(
     (a, b) => (covered.has(a.region) ? 1 : 0) - (covered.has(b.region) ? 1 : 0),
   );
@@ -187,7 +220,7 @@ function picker(day: GymDay, s: GymSlot, rerender: () => void): HTMLElement {
       el('span', { class: 'opt__region' }, [isCov ? `${o.region} · already covered` : o.region]),
     ]);
     btn.addEventListener('click', () => {
-      setSelection(day.id, s.id, o.name);
+      setSelection(splitId, day.id, s.id, o.name);
       rerender();
     });
     box.append(btn);
@@ -196,30 +229,30 @@ function picker(day: GymDay, s: GymSlot, rerender: () => void): HTMLElement {
 }
 
 /** Regions selected in OTHER slots of the same category. */
-function coveredRegions(day: GymDay, slot: GymSlot): Set<string> {
+function coveredRegions(splitId: string, day: GymDay, slot: GymSlot): Set<string> {
   const set = new Set<string>();
-  for (const other of daySlots(day)) {
+  for (const other of daySlots(splitId, day)) {
     if (other.category === slot.category && other.id !== slot.id) {
-      set.add(selectedOption(day.id, other).region);
+      set.add(selectedOption(splitId, day.id, other).region);
     }
   }
   return set;
 }
 
-function isDuplicateRegion(day: GymDay, slot: GymSlot, region: string): boolean {
-  return coveredRegions(day, slot).has(region);
+function isDuplicateRegion(splitId: string, day: GymDay, slot: GymSlot, region: string): boolean {
+  return coveredRegions(splitId, day, slot).has(region);
 }
 
 // ── Session view (checklist) ──
-function renderSession(day: GymDay, container: HTMLElement): void {
+function renderSession(splitId: string, day: GymDay, container: HTMLElement): void {
   container.replaceChildren();
 
   const back = el('button', { class: 'slot__change', type: 'button' }, ['← Edit workout']);
-  back.addEventListener('click', () => renderBuilder(day, container));
+  back.addEventListener('click', () => renderBuilder(splitId, day, container));
   container.append(el('div', { class: 'gym-session__bar' }, [back, el('span', { class: 'gym-day__focus' }, ['Session'])]));
 
   const groups = new Map<string, GymSlot[]>();
-  for (const s of daySlots(day)) {
+  for (const s of daySlots(splitId, day)) {
     const list = groups.get(s.category) ?? [];
     list.push(s);
     groups.set(s.category, list);
@@ -233,7 +266,7 @@ function renderSession(day: GymDay, container: HTMLElement): void {
     const card = el('div', { class: 'card' }, [el('div', { class: 'gym-cat' }, [category])]);
     for (const s of slots) {
       total++;
-      const selected = selectedOption(day.id, s);
+      const selected = selectedOption(splitId, day.id, s);
       const row = el('label', { class: 'gym-check' }, [
         (() => {
           const cb = el('input', { type: 'checkbox' }) as HTMLInputElement;
@@ -256,6 +289,6 @@ function renderSession(day: GymDay, container: HTMLElement): void {
   }
 
   const finish = el('button', { class: 'btn btn--primary', type: 'button' }, ['Finish workout']);
-  finish.addEventListener('click', () => renderBuilder(day, container));
+  finish.addEventListener('click', () => renderBuilder(splitId, day, container));
   container.append(counter, finish);
 }
