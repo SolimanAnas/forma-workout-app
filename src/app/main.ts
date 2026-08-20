@@ -16,6 +16,7 @@ import { renderSensorDiag } from '../ui/screens/sensor-diag';
 import { renderActiveWorkout } from '../ui/screens/active-workout';
 import { renderExercise } from '../ui/screens/exercise';
 import { renderGym, initGymSelections } from '../ui/screens/gym';
+import { renderCalendar } from '../ui/screens/calendar';
 
 async function bootstrap(): Promise<void> {
   const root = document.querySelector<HTMLDivElement>('#app');
@@ -37,6 +38,7 @@ async function bootstrap(): Promise<void> {
     .add({ path: 'exercise', title: 'Exercise', render: renderExercise })
     .add({ path: 'exercises', title: 'Exercises', render: renderExercises })
     .add({ path: 'gym', title: 'Gym', render: renderGym })
+    .add({ path: 'calendar', title: 'Calendar', render: renderCalendar })
     .add({ path: 'settings', title: 'Settings', render: renderProfile })
     .add({ path: 'active-workout', title: 'Active workout', render: renderActiveWorkout })
     .add({ path: 'sensor-diag', title: 'Sensor diagnostics', render: renderSensorDiag });

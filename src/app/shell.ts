@@ -48,9 +48,10 @@ export function mountShell(root: HTMLElement): HTMLElement {
   });
   syncThemeBtn();
 
+  const calBtn = el('a', { class: 'app-header__theme', href: '#/calendar', 'aria-label': 'Workout calendar' }, ['📅']);
   const header = el('header', { class: 'app-header' }, [
     el('span', { class: 'app-header__brand' }, ['FORMA']),
-    themeBtn,
+    el('div', { class: 'app-header__actions' }, [calBtn, themeBtn]),
   ]);
 
   const shell = el('div', { class: 'app-shell' }, [header, outlet, nav]);

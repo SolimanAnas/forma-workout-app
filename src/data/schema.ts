@@ -2,7 +2,7 @@ import type { DBSchema } from 'idb';
 import type { SensorRecording } from '../sensors/replay/recording';
 
 export const DB_NAME = 'forma';
-export const DB_VERSION = 2;
+export const DB_VERSION = 3;
 
 /** Key/value app settings (theme, voice coach, units, dev mode, ...). */
 export interface SettingRecord {
@@ -69,6 +69,20 @@ export interface ChallengeRecord {
   bestResult?: number;
 }
 
+/** A scheduled workout on the calendar (spec: calendar feature). */
+export interface CalendarEventRecord {
+  id: string;
+  /** YYYY-MM-DD. */
+  date: string;
+  /** Optional HH:MM (24h); empty = all-day. */
+  time?: string;
+  title: string;
+  /** 'gym' | 'bodyweight' | 'rest' | 'custom'. */
+  kind: string;
+  notes?: string;
+  createdAt: number;
+}
+
 export interface FormaDB extends DBSchema {
   settings: { key: string; value: SettingRecord };
   profile: { key: string; value: ProfileRecord };
@@ -84,6 +98,8 @@ export interface FormaDB extends DBSchema {
   challenges: { key: string; value: ChallengeRecord; indexes: { 'by-date': string } };
   // Added in DB v2 — developer sensor recordings for replay (spec §39).
   recordings: { key: string; value: SensorRecording; indexes: { 'by-started': number } };
+  // Added in DB v3 — scheduled workouts on the calendar.
+  calendarEvents: { key: string; value: CalendarEventRecord; indexes: { 'by-date': string } };
 }
 
 export type StoreName = keyof FormaDB;

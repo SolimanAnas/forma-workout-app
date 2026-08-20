@@ -40,6 +40,18 @@ export async function renderHome(outlet: HTMLElement): Promise<void> {
     ]),
   );
 
+  // Workout calendar entry.
+  view.append(
+    el('a', { class: 'card home-link', href: '#/calendar' }, [
+      el('span', { class: 'home-link__icon', 'aria-hidden': 'true' }, ['📅']),
+      el('div', {}, [
+        el('div', { class: 'exercise-item__name' }, ['Workout calendar']),
+        el('div', { class: 'exercise-item__meta' }, ['Plan your week & sync to Google Calendar.']),
+      ]),
+      el('span', { class: 'exercise-card__chevron', 'aria-hidden': 'true' }, ['›']),
+    ]),
+  );
+
   const weekTotal = data.week.reduce((s, day) => s + day.reps, 0);
   view.append(
     el('div', { class: 'card' }, [

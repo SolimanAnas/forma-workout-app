@@ -23,6 +23,7 @@ describe('IndexedDB migration (empty → latest)', () => {
     expect([...db.objectStoreNames].sort()).toEqual(
       [
         'achievements',
+        'calendarEvents',
         'calibrations',
         'challenges',
         'personalRecords',

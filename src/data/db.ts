@@ -25,6 +25,9 @@ function migrate(db: IDBPDatabase<FormaDB>, oldVersion: number): void {
   if (oldVersion < 2) {
     createV2(db);
   }
+  if (oldVersion < 3) {
+    createV3(db);
+  }
 }
 
 function createV1(db: IDBPDatabase<FormaDB>): void {
@@ -50,6 +53,11 @@ function createV1(db: IDBPDatabase<FormaDB>): void {
 function createV2(db: IDBPDatabase<FormaDB>): void {
   const recordings = db.createObjectStore('recordings', { keyPath: 'id' });
   recordings.createIndex('by-started', 'startedAt');
+}
+
+function createV3(db: IDBPDatabase<FormaDB>): void {
+  const calendar = db.createObjectStore('calendarEvents', { keyPath: 'id' });
+  calendar.createIndex('by-date', 'date');
 }
 
 /**
